@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ricalcolatore Ricette</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -41,9 +42,16 @@
       display: flex;
       gap: 10px;
       align-items: center;
+      margin-bottom: 1rem;
     }
     .flex-row > div {
       flex: 1;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 1rem;
     }
     button {
       background-color: #27ae60;
@@ -54,6 +62,7 @@
       border-radius: 8px;
       cursor: pointer;
       width: 100%;
+      transition: background-color 0.2s;
     }
     button:hover {
       background-color: #219150;
@@ -84,8 +93,10 @@
 
     <div id="ingredients"></div>
 
-    <button onclick="addIngredient()">+ Aggiungi ingrediente</button>
-    <button onclick="calculate()">Calcola</button>
+    <div class="button-group">
+      <button onclick="addIngredient()">+ Aggiungi ingrediente</button>
+      <button onclick="calculate()">Calcola</button>
+    </div>
 
     <table id="results" style="display:none;">
       <thead>
@@ -156,7 +167,7 @@
       document.getElementById('results').style.display = 'table';
     }
 
-    // Aggiungi 3 ingredienti di default all'inizio
+    // Aggiungi 3 ingredienti di default
     for (let i = 0; i < 3; i++) addIngredient();
   </script>
 </body>
