@@ -1,119 +1,163 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ricalcolatore Ricette Online o Manuali</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ricalcolatore Ricette</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-    h1, h2 { color: #333; }
-    section { margin-bottom: 40px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-    input, select, textarea, button {
-      width: 100%; margin-top: 10px; padding: 10px; font-size: 16px; margin-bottom: 10px;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f4f8;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
     }
-    #results1, #results2 { padding: 15px; background: #f9f9f9; }
-    .ingredient-line { margin-bottom: 5px; }
-    label { font-weight: bold; }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin: 0.8rem 0 0.3rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .flex-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .flex-row > div {
+      flex: 1;
+    }
+    button {
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #219150;
+    }
+    table {
+      width: 100%;
+      margin-top: 2rem;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
   </style>
 </head>
 <body>
-
   <h1>Ricalcolatore di Ricette</h1>
+  <div class="container">
+    <label for="original-people">Numero di persone (ricetta originale):</label>
+    <input type="number" id="original-people" min="1" value="4">
 
-  <!-- SEZIONE 1: Inserimento link (non funzionale, solo segnaposto) -->
-  <section>
-    <h2>1. Inserisci il link di una ricetta (funzionalità avanzata futura)</h2>
-    <label for="url">URL della ricetta:</label>
-    <input type="url" id="url" placeholder="https://...">
+    <label for="desired-people">Numero di persone desiderate:</label>
+    <input type="number" id="desired-people" min="1" value="2">
 
-    <label for="desiredServings1">Numero di porzioni desiderate:</label>
-    <input type="number" id="desiredServings1" placeholder="Es. 8" min="1">
+    <div id="ingredients"></div>
 
-    <button onclick="alert('Funzionalità ancora da implementare')">Estrai e Ricalcola (non attivo)</button>
+    <button onclick="addIngredient()">+ Aggiungi ingrediente</button>
+    <button onclick="calculate()">Calcola</button>
 
-    <div id="results1"></div>
-  </section>
+    <table id="results" style="display:none;">
+      <thead>
+        <tr>
+          <th>Ingrediente</th>
+          <th>Dose originale</th>
+          <th>Dose ricalcolata</th>
+        </tr>
+      </thead>
+      <tbody id="results-body"></tbody>
+    </table>
+  </div>
 
-  <!-- SEZIONE 2: Inserimento manuale -->
-  <section>
-    <h2>2. Inserisci manualmente la tua ricetta</h2>
+  <script>
+    const ingredientContainer = document.getElementById('ingredients');
 
-    <label for="originalServings2">Numero di porzioni originali:</label>
-    <input type="number" id="originalServings2" placeholder="Es. 4" min="1">
+    function addIngredient() {
+      const row = document.createElement('div');
+      row.className = 'flex-row';
 
-    <div id="ingredientInputs">
-      <div class="ingredient-entry">
-        <input type="number" step="0.01" placeholder="Quantità" class="amount">
-        <select class="unit">
-          <option value="g">g</option>
-          <option value="ml">ml</option>
-          <option value="uova">uova</option>
-          <option value="cucchiai">cucchiai</option>
-          <option value="cucchiaini">cucchiaini</option>
-          <option value="pezzi">pezzi</option>
-        </select>
-        <input type="text" placeholder="Ingrediente" class="name">
-      </div>
-    </div>
-
-    <button onclick="addIngredient()">Aggiungi Ingrediente</button>
-
-    <label for="desiredServings2">Numero di porzioni desiderate:</label>
-    <input type="number" id="desiredServings2" placeholder="Es. 10" min="1">
-
-    <button onclick="recalculateManual()">Ricalcola Dosi</button>
-
-    <div id="results2"></div>
-  </section>
-
-<script>
-  function addIngredient() {
-    const container = document.getElementById('ingredientInputs');
-    const entry = document.createElement('div');
-    entry.classList.add('ingredient-entry');
-    entry.innerHTML = `
-      <input type="number" step="0.01" placeholder="Quantità" class="amount">
-      <select class="unit">
-        <option value="g">g</option>
-        <option value="ml">ml</option>
-        <option value="uova">uova</option>
-        <option value="cucchiai">cucchiai</option>
-        <option value="cucchiaini">cucchiaini</option>
-        <option value="pezzi">pezzi</option>
-      </select>
-      <input type="text" placeholder="Ingrediente" class="name">
-    `;
-    container.appendChild(entry);
-  }
-
-  function recalculateManual() {
-    const original = parseFloat(document.getElementById('originalServings2').value);
-    const desired = parseFloat(document.getElementById('desiredServings2').value);
-    const resultsDiv = document.getElementById('results2');
-
-    if (!original || !desired) {
-      resultsDiv.innerHTML = "<p>Inserisci tutte le informazioni.</p>";
-      return;
+      row.innerHTML = `
+        <div><input type="text" placeholder="Ingrediente" class="ingredient-name"></div>
+        <div><input type="number" min="0" step="0.01" placeholder="Quantità" class="ingredient-quantity"></div>
+        <div>
+          <select class="ingredient-unit">
+            <option value="g">g</option>
+            <option value="ml">ml</option>
+            <option value="cucchiai">cucchiai</option>
+            <option value="cucchiaini">cucchiaini</option>
+            <option value="pezzi">pezzi</option>
+            <option value="tazze">tazze</option>
+          </select>
+        </div>
+      `;
+      ingredientContainer.appendChild(row);
     }
 
-    const entries = document.querySelectorAll('.ingredient-entry');
-    let output = "<h3>Dosi ricalcolate:</h3>";
+    function calculate() {
+      const originalPeople = parseFloat(document.getElementById('original-people').value);
+      const desiredPeople = parseFloat(document.getElementById('desired-people').value);
 
-    entries.forEach(entry => {
-      const amount = parseFloat(entry.querySelector('.amount').value);
-      const unit = entry.querySelector('.unit').value;
-      const name = entry.querySelector('.name').value;
+      const names = document.querySelectorAll('.ingredient-name');
+      const quantities = document.querySelectorAll('.ingredient-quantity');
+      const units = document.querySelectorAll('.ingredient-unit');
+      const resultsBody = document.getElementById('results-body');
 
-      if (!isNaN(amount) && name.trim() !== "") {
-        const newAmount = (amount / original) * desired;
-        output += `<div class="ingredient-line">${newAmount.toFixed(2)} ${unit} ${name}</div>`;
+      resultsBody.innerHTML = '';
+
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i].value || '(senza nome)';
+        const quantity = parseFloat(quantities[i].value);
+        const unit = units[i].value;
+
+        if (!isNaN(quantity)) {
+          const newQty = quantity * desiredPeople / originalPeople;
+          const displayedQty = unit === 'pezzi' ? newQty.toFixed(1) : Math.round(newQty);
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${quantity} ${unit}</td>
+            <td>${displayedQty} ${unit}</td>
+          `;
+          resultsBody.appendChild(row);
+        }
       }
-    });
 
-    resultsDiv.innerHTML = output;
-  }
-</script>
+      document.getElementById('results').style.display = 'table';
+    }
 
+    // Aggiungi 3 ingredienti di default all'inizio
+    for (let i = 0; i < 3; i++) addIngredient();
+  </script>
 </body>
 </html>
