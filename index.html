@@ -2,133 +2,106 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ricalcolatore Ricette</title>
-  <link rel="icon" href="favicon.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calcolatore Ricette</title>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #fdfdfd;
     }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
     h1 {
       text-align: center;
-      color: #3a3a3a;
+      color: #2c3e50;
+    }
+    .section {
       margin-bottom: 30px;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 10px;
     }
-
-    label {
-      font-weight: bold;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="url"],
-    select {
-      padding: 6px;
-      margin: 4px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      max-width: 100%;
-    }
-
-    button {
-      background-color: #28a745;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
     .flex-row {
       display: flex;
       gap: 10px;
       margin-bottom: 10px;
-      flex-wrap: wrap;
     }
-
-    .flex-row div {
+    .flex-row input, .flex-row select {
       flex: 1;
-      min-width: 100px;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
-    .results {
-      margin-top: 30px;
-    }
-
-    .results table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .results th, .results td {
-      border: 1px solid #ccc;
       padding: 8px;
-      text-align: center;
     }
-
-    .results th {
-      background-color: #f1f1f1;
+    button {
+      padding: 10px 15px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
-
+    button:hover {
+      background-color: #2980b9;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #eaf7ea;
+      border: 1px solid #b4d6b4;
+      border-radius: 10px;
+    }
+    .space-below {
+      margin-bottom: 15px;
+    }
     @media print {
-      .button-group,
-      #recipe-url,
-      button {
+      button, input, select, .section-url {
         display: none;
-      }
-      .container {
-        box-shadow: none;
-        border: none;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🍴 Ricalcolatore Ricette</h1>
+  <h1>🍴 Calcolo Ricette - CRC</h1>
 
-    <label for="recipe-url">1. Inserisci l'URL di una ricetta (se disponibile):</label>
-    <input type="url" id="recipe-url" placeholder="https://esempio.com/ricetta" />
-    <button onclick="fetchRecipe()">Carica ricetta</button>
+  <div class="section section-url">
+    <h3>1. Inserisci un link a una ricetta</h3>
+    <div class="flex-row space-below">
+      <input type="text" id="recipe-url" placeholder="https://..." />
+      <button onclick="fetchRecipe()">Carica Ricetta</button>
+    </div>
+  </div>
 
-    <hr />
+  <div class="section">
+    <h3>2. Inserisci Ingredienti Manualmente</h3>
+    <div id="ingredient-container"></div>
+    <button onclick="addIngredient()">+ Aggiungi Ingrediente</button>
+  </div>
 
-    <label>2. Inserisci manualmente gli ingredienti:</label>
-    <div id="ingredientContainer">
-      <!-- Riga iniziale -->
-      <div class="flex-row">
-        <div><input type="text" class="ingredient-name" placeholder="Es. Farina" /></div>
+  <div class="section">
+    <h3>3. Imposta Porzioni</h3>
+    <div class="flex-row">
+      <input type="number" id="original-people" placeholder="Porzioni originali" />
+      <input type="number" id="desired-people" placeholder="Porzioni desiderate" />
+    </div>
+  </div>
+
+  <div class="section">
+    <button onclick="calculateQuantities()">CALCOLA</button>
+    <span style="margin-left: 15px;"></span>
+    <button onclick="window.print()">STAMPA</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+    const ingredientContainer = document.getElementById("ingredient-container");
+
+    function addIngredient() {
+      const row = document.createElement("div");
+      row.className = "flex-row";
+      row.innerHTML = `
+        <div><input type="text" class="ingredient-name" placeholder="Ingrediente" /></div>
         <div><input type="number" class="ingredient-quantity" placeholder="Quantità" /></div>
         <div>
           <select class="ingredient-unit">
+            <option value="">-</option>
             <option value="g">g</option>
             <option value="ml">ml</option>
             <option value="cucchiai">cucchiai</option>
@@ -137,94 +110,40 @@
             <option value="tazze">tazze</option>
           </select>
         </div>
-      </div>
-    </div>
-
-    <div class="button-group">
-      <button onclick="addIngredient()">+ Aggiungi ingrediente</button>
-      <button onclick="calculate()">🔄 Calcola</button>
-      <button onclick="window.print()">🖨️ Stampa report</button>
-    </div>
-
-    <div class="flex-row">
-      <div>
-        <label for="original-people">Persone originali:</label>
-        <input type="number" id="original-people" value="4" min="1" />
-      </div>
-      <div>
-        <label for="desired-people">Persone desiderate:</label>
-        <input type="number" id="desired-people" value="4" min="1" />
-      </div>
-    </div>
-
-    <div class="results" id="results"></div>
-  </div>
-
-  <script>
-    const ingredientContainer = document.getElementById("ingredientContainer");
-
-    function addIngredient() {
-      const row = document.createElement("div");
-      row.className = "flex-row";
-      row.innerHTML = `
-        <div><input type="text" class="ingredient-name" placeholder="Es. Farina" /></div>
-        <div><input type="number" class="ingredient-quantity" placeholder="Quantità" /></div>
-        <div>
-          <select class="ingredient-unit">
-            <option value="g">g</option>
-            <option value="ml">ml</option>
-            <option value="cucchiai">cucchiai</option>
-            <option value="cucchiaini">cucchiaini</option>
-            <option value="pezzi">pezzi</option>
-            <option value="tazze">tazze</option>
-          </select>
-        </div>`;
+      `;
       ingredientContainer.appendChild(row);
     }
 
-    function calculate() {
+    function calculateQuantities() {
+      const originalPeople = parseFloat(document.getElementById("original-people").value);
+      const desiredPeople = parseFloat(document.getElementById("desired-people").value);
+      const output = document.getElementById("output");
+      output.innerHTML = "";
+
+      if (!originalPeople || !desiredPeople || desiredPeople <= 0) {
+        alert("Inserisci il numero di persone corretto.");
+        return;
+      }
+
       const names = document.querySelectorAll(".ingredient-name");
       const quantities = document.querySelectorAll(".ingredient-quantity");
       const units = document.querySelectorAll(".ingredient-unit");
 
-      const originalPeople = parseFloat(document.getElementById("original-people").value);
-      const desiredPeople = parseFloat(document.getElementById("desired-people").value);
+      output.innerHTML = "<h3>Ingredienti Ricalcolati:</h3><ul>";
 
-      if (!originalPeople || !desiredPeople || desiredPeople < 1) {
-        alert("Controlla i valori delle persone.");
-        return;
-      }
-
-      const output = [];
       for (let i = 0; i < names.length; i++) {
         const name = names[i].value;
-        const qty = parseFloat(quantities[i].value);
+        const quantity = parseFloat(quantities[i].value);
         const unit = units[i].value;
 
-        if (!name || isNaN(qty)) continue;
+        if (!name || isNaN(quantity)) continue;
 
-        let newQty = (qty / originalPeople) * desiredPeople;
-        if (unit !== "pezzi") newQty = Math.round(newQty * 1) / 1;
-
-        output.push({ name, unit, qty, newQty });
+        const newQuantity = quantity * (desiredPeople / originalPeople);
+        const rounded = (unit === "pezzi") ? newQuantity.toFixed(1) : Math.round(newQuantity);
+        output.innerHTML += `<li>${name}: <strong>${rounded} ${unit}</strong> <em>(originale: ${quantity} ${unit})</em></li>`;
       }
 
-      const resultDiv = document.getElementById("results");
-      if (output.length === 0) {
-        resultDiv.innerHTML = "<p>Nessun ingrediente valido inserito.</p>";
-        return;
-      }
-
-      let html = `<h3>📄 Report Ingredienti Ricalcolati:</h3><table><tr><th>Ingrediente</th><th>Originale</th><th>Ricalcolato</th></tr>`;
-      output.forEach(item => {
-        html += `<tr>
-          <td>${item.name}</td>
-          <td>${item.qty} ${item.unit}</td>
-          <td>${item.newQty} ${item.unit}</td>
-        </tr>`;
-      });
-      html += "</table>";
-      resultDiv.innerHTML = html;
+      output.innerHTML += "</ul>";
     }
 
     async function fetchRecipe() {
@@ -238,7 +157,6 @@
         const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
         const data = await response.json();
         const html = data.contents;
-
         const doc = new DOMParser().parseFromString(html, "text/html");
         const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
 
@@ -255,22 +173,34 @@
           return;
         }
 
-        // Pulisce ingredienti precedenti
         ingredientContainer.innerHTML = "";
-        recipeData.recipeIngredient.forEach(ingredient => {
+
+        const unitOptions = ["g", "grammi", "ml", "l", "cucchiai", "cucchiaini", "pezzi", "tazze", "kg", "cl"];
+        recipeData.recipeIngredient.forEach(rawText => {
+          const match = rawText.trim().match(/^([\d.,\/]+)?\s*(\w+)?\s*(.*)$/);
+          let quantity = parseFloat(match[1]?.replace(",", ".") || 0);
+          let unit = match[2]?.toLowerCase() || "";
+          let name = match[3] || rawText;
+
+          if (!unitOptions.includes(unit)) {
+            name = `${unit} ${name}`.trim();
+            unit = "";
+          }
+
           const row = document.createElement("div");
           row.className = "flex-row";
           row.innerHTML = `
-            <div><input type="text" value="${ingredient}" class="ingredient-name" /></div>
-            <div><input type="number" class="ingredient-quantity" placeholder="Quantità" /></div>
+            <div><input type="text" value="${name}" class="ingredient-name" /></div>
+            <div><input type="number" value="${isNaN(quantity) ? '' : quantity}" class="ingredient-quantity" /></div>
             <div>
               <select class="ingredient-unit">
-                <option value="g">g</option>
-                <option value="ml">ml</option>
-                <option value="cucchiai">cucchiai</option>
-                <option value="cucchiaini">cucchiaini</option>
-                <option value="pezzi">pezzi</option>
-                <option value="tazze">tazze</option>
+                <option value="">-</option>
+                <option value="g" ${unit === "g" ? "selected" : ""}>g</option>
+                <option value="ml" ${unit === "ml" ? "selected" : ""}>ml</option>
+                <option value="cucchiai" ${unit === "cucchiai" ? "selected" : ""}>cucchiai</option>
+                <option value="cucchiaini" ${unit === "cucchiaini" ? "selected" : ""}>cucchiaini</option>
+                <option value="pezzi" ${unit === "pezzi" ? "selected" : ""}>pezzi</option>
+                <option value="tazze" ${unit === "tazze" ? "selected" : ""}>tazze</option>
               </select>
             </div>`;
           ingredientContainer.appendChild(row);
@@ -286,4 +216,3 @@
   </script>
 </body>
 </html>
-
