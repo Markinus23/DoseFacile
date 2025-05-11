@@ -37,6 +37,7 @@
       border-radius: 5px;
       cursor: pointer;
       margin-top: 0.5rem;
+      margin-right: 0.5rem;
     }
     .btn:hover {
       background: #1976D2;
@@ -62,12 +63,18 @@
   <div class="container">
     <h1>Ricalcolatore Ricette</h1>
 
-    <h2>1. Inserisci Ingredienti Manualmente</h2>
+    <h2>1. Inserisci il link di una ricetta</h2>
+    <label>URL della ricetta:
+      <input type="text" id="ricetta-url" style="width: 100%;" placeholder="https://ricette.giallozafferano.it/..." />
+    </label>
+    <button class="btn" onclick="alert('Funzionalità ancora da implementare')">Estrai e Ricalcola (non attivo)</button>
+
+    <h2>2. Inserisci Ingredienti Manualmente</h2>
     <div id="ingredienti-container"></div>
     <button class="btn" onclick="aggiungiIngrediente()">+ Aggiungi Ingrediente</button>
     <button class="btn" onclick="suddividiIngredienti()">Estrai e Suddividi</button>
 
-    <h2>2. Numero di porzioni</h2>
+    <h2>3. Numero di porzioni</h2>
     <label>Originali: <input type="number" id="porzioni-originali" value="4" /></label>
     <label>Desiderate: <input type="number" id="porzioni-desiderate" value="2" /></label>
     <br/>
@@ -180,11 +187,12 @@
       document.getElementById('output').style.display = 'block';
     }
 
-    // Avvia con 3 righe vuote
+    // Avvio con alcune righe precompilate
     aggiungiIngrediente();
     aggiungiIngrediente();
     aggiungiIngrediente();
   </script>
 </body>
 </html>
+
 
