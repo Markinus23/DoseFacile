@@ -2,217 +2,181 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Calcolatore Ricette</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ricalcolatore Ricette</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #fdfdfd;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff9f2;
+      margin: 0;
+      padding: 20px;
     }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
+    h1, h2 {
+      color: #333;
     }
-    .section {
-      margin-bottom: 30px;
-      padding: 15px;
-      background: #f5f5f5;
-      border-radius: 10px;
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
     }
-    .flex-row {
+    input, select, button {
+      padding: 6px 10px;
+      margin: 5px;
+      font-size: 1rem;
+    }
+    .ingrediente-row {
       display: flex;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 5px;
       margin-bottom: 10px;
     }
-    .flex-row input, .flex-row select {
+    .ingrediente-row input, .ingrediente-row select {
       flex: 1;
-      padding: 8px;
+      min-width: 100px;
     }
-    button {
-      padding: 10px 15px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    #output {
+    .output {
+      background-color: #f1f1f1;
+      padding: 10px;
       margin-top: 20px;
-      padding: 15px;
-      background: #eaf7ea;
-      border: 1px solid #b4d6b4;
-      border-radius: 10px;
     }
-    .space-below {
-      margin-bottom: 15px;
+    .button-group {
+      margin-top: 10px;
     }
-    @media print {
-      button, input, select, .section-url {
-        display: none;
-      }
+    .ingredient-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ingredient-table th, .ingredient-table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    .ingredient-table th {
+      background-color: #f7e1c7;
     }
   </style>
 </head>
 <body>
-  <h1>🍴 Calcolo Ricette - CRC</h1>
+<div class="container">
+  <h1>🧮 Ricalcolatore Ricette</h1>
 
-  <div class="section section-url">
-    <h3>1. Inserisci un link a una ricetta</h3>
-    <div class="flex-row space-below">
-      <input type="text" id="recipe-url" placeholder="https://..." />
-      <button onclick="fetchRecipe()">Carica Ricetta</button>
-    </div>
+  <h2>Parte 1: Inserisci URL di una ricetta</h2>
+  <input type="text" id="urlInput" placeholder="Incolla qui l'URL della ricetta..." size="60">
+  <input type="number" id="desiredPortionsURL" placeholder="Porzioni desiderate">
+  <button onclick="caricaRicettaDaURL()">Carica e Ricalcola</button>
+
+  <h2>Parte 2: Inserisci ricetta manualmente</h2>
+  <input type="number" id="originalPortions" placeholder="Porzioni originali">
+  <input type="number" id="desiredPortions" placeholder="Porzioni desiderate">
+  <div id="ingredienti"></div>
+  <div class="button-group">
+    <button onclick="aggiungiIngrediente()">Aggiungi ingrediente</button>
+    <button onclick="ricalcolaDosi()">Calcola</button>
+    <button onclick="window.print()">Stampa</button>
   </div>
 
-  <div class="section">
-    <h3>2. Inserisci Ingredienti Manualmente</h3>
-    <div id="ingredient-container"></div>
-    <button onclick="addIngredient()">+ Aggiungi Ingrediente</button>
+  <div class="output">
+    <h2>Risultato</h2>
+    <table class="ingredient-table" id="outputTable">
+      <thead>
+        <tr>
+          <th>Ingrediente</th>
+          <th>Dose Originale</th>
+          <th>Dose Ricalcolata</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
+</div>
 
-  <div class="section">
-    <h3>3. Imposta Porzioni</h3>
-    <div class="flex-row">
-      <input type="number" id="original-people" placeholder="Porzioni originali" />
-      <input type="number" id="desired-people" placeholder="Porzioni desiderate" />
-    </div>
-  </div>
+<script>
+  const unitaMisura = [
+    'g', 'kg', 'ml', 'l', 'pz', 'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai',
+    'bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette', 'spicchio', 'spicchi',
+    'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'pizzico', 'pizzichi'
+  ];
 
-  <div class="section">
-    <button onclick="calculateQuantities()">CALCOLA</button>
-    <span style="margin-left: 15px;"></span>
-    <button onclick="window.print()">STAMPA</button>
-  </div>
+  function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
+    const div = document.createElement('div');
+    div.className = 'ingrediente-row';
+    div.innerHTML = `
+      <input type="text" placeholder="Ingrediente" value="${nome}">
+      <input type="number" placeholder="Quantità" value="${quantita}">
+      <select>
+        ${unitaMisura.map(u => `<option value="${u}" ${u === unita ? 'selected' : ''}>${u}</option>`).join('')}
+      </select>
+    `;
+    document.getElementById('ingredienti').appendChild(div);
+  }
 
-  <div id="output"></div>
+  function ricalcolaDosi() {
+    const original = parseFloat(document.getElementById('originalPortions').value);
+    const desired = parseFloat(document.getElementById('desiredPortions').value);
+    const fattore = desired / original;
+    const tbody = document.querySelector('#outputTable tbody');
+    tbody.innerHTML = '';
 
-  <script>
-    const ingredientContainer = document.getElementById("ingredient-container");
+    document.querySelectorAll('#ingredienti .ingrediente-row').forEach(row => {
+      const nome = row.children[0].value;
+      const quantita = parseFloat(row.children[1].value);
+      const unita = row.children[2].value;
+      const ricalcolata = unita.includes('pz') ? quantita * fattore : Math.round(quantita * fattore);
 
-    function addIngredient() {
-      const row = document.createElement("div");
-      row.className = "flex-row";
-      row.innerHTML = `
-        <div><input type="text" class="ingredient-name" placeholder="Ingrediente" /></div>
-        <div><input type="number" class="ingredient-quantity" placeholder="Quantità" /></div>
-        <div>
-          <select class="ingredient-unit">
-            <option value="">-</option>
-            <option value="g">g</option>
-            <option value="ml">ml</option>
-            <option value="cucchiai">cucchiai</option>
-            <option value="cucchiaini">cucchiaini</option>
-            <option value="pezzi">pezzi</option>
-            <option value="tazze">tazze</option>
-          </select>
-        </div>
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${nome}</td>
+        <td>${quantita} ${unita}</td>
+        <td>${ricalcolata} ${unita}</td>
       `;
-      ingredientContainer.appendChild(row);
-    }
+      tbody.appendChild(tr);
+    });
+  }
 
-    function calculateQuantities() {
-      const originalPeople = parseFloat(document.getElementById("original-people").value);
-      const desiredPeople = parseFloat(document.getElementById("desired-people").value);
-      const output = document.getElementById("output");
-      output.innerHTML = "";
+  function parseIngredienteStringa(str) {
+    const regex = /^(\d+[.,\/]?\d*|½|¼|¾)?\s*(\w+)?\s+(.*)$/;
+    const match = str.match(regex);
+    if (!match) return ['', '', str];
+    let [_, quant, unit, name] = match;
+    quant = quant?.replace(',', '.') === '½' ? 0.5 : quant?.replace(',', '.') === '¼' ? 0.25 : quant?.replace(',', '.') === '¾' ? 0.75 : quant;
+    return [name, parseFloat(quant), unit];
+  }
 
-      if (!originalPeople || !desiredPeople || desiredPeople <= 0) {
-        alert("Inserisci il numero di persone corretto.");
-        return;
-      }
+  async function caricaRicettaDaURL() {
+    const url = document.getElementById('urlInput').value;
+    const desired = parseFloat(document.getElementById('desiredPortionsURL').value);
 
-      const names = document.querySelectorAll(".ingredient-name");
-      const quantities = document.querySelectorAll(".ingredient-quantity");
-      const units = document.querySelectorAll(".ingredient-unit");
+    try {
+      const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      const html = await response.text();
 
-      output.innerHTML = "<h3>Ingredienti Ricalcolati:</h3><ul>";
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
 
-      for (let i = 0; i < names.length; i++) {
-        const name = names[i].value;
-        const quantity = parseFloat(quantities[i].value);
-        const unit = units[i].value;
-
-        if (!name || isNaN(quantity)) continue;
-
-        const newQuantity = quantity * (desiredPeople / originalPeople);
-        const rounded = (unit === "pezzi") ? newQuantity.toFixed(1) : Math.round(newQuantity);
-        output.innerHTML += `<li>${name}: <strong>${rounded} ${unit}</strong> <em>(originale: ${quantity} ${unit})</em></li>`;
-      }
-
-      output.innerHTML += "</ul>";
-    }
-
-    async function fetchRecipe() {
-      const url = document.getElementById("recipe-url").value;
-      if (!url) {
-        alert("Inserisci un URL valido.");
-        return;
-      }
-
-      try {
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        const data = await response.json();
-        const html = data.contents;
-        const doc = new DOMParser().parseFromString(html, "text/html");
-        const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
-
-        let recipeData = null;
-        scripts.forEach(script => {
-          try {
-            const json = JSON.parse(script.textContent);
-            if (json["@type"] === "Recipe") recipeData = json;
-          } catch {}
-        });
-
-        if (!recipeData || !recipeData.recipeIngredient) {
-          alert("Dati della ricetta non trovati o non compatibili.");
-          return;
+      let ricetta;
+      for (let s of scripts) {
+        const json = JSON.parse(s.textContent);
+        if (json['@type'] === 'Recipe' || (Array.isArray(json['@type']) && json['@type'].includes('Recipe'))) {
+          ricetta = json;
+          break;
         }
-
-        ingredientContainer.innerHTML = "";
-
-        const unitOptions = ["g", "grammi", "ml", "l", "cucchiai", "cucchiaini", "pezzi", "tazze", "kg", "cl"];
-        recipeData.recipeIngredient.forEach(rawText => {
-          const match = rawText.trim().match(/^([\d.,\/]+)?\s*(\w+)?\s*(.*)$/);
-          let quantity = parseFloat(match[1]?.replace(",", ".") || 0);
-          let unit = match[2]?.toLowerCase() || "";
-          let name = match[3] || rawText;
-
-          if (!unitOptions.includes(unit)) {
-            name = `${unit} ${name}`.trim();
-            unit = "";
-          }
-
-          const row = document.createElement("div");
-          row.className = "flex-row";
-          row.innerHTML = `
-            <div><input type="text" value="${name}" class="ingredient-name" /></div>
-            <div><input type="number" value="${isNaN(quantity) ? '' : quantity}" class="ingredient-quantity" /></div>
-            <div>
-              <select class="ingredient-unit">
-                <option value="">-</option>
-                <option value="g" ${unit === "g" ? "selected" : ""}>g</option>
-                <option value="ml" ${unit === "ml" ? "selected" : ""}>ml</option>
-                <option value="cucchiai" ${unit === "cucchiai" ? "selected" : ""}>cucchiai</option>
-                <option value="cucchiaini" ${unit === "cucchiaini" ? "selected" : ""}>cucchiaini</option>
-                <option value="pezzi" ${unit === "pezzi" ? "selected" : ""}>pezzi</option>
-                <option value="tazze" ${unit === "tazze" ? "selected" : ""}>tazze</option>
-              </select>
-            </div>`;
-          ingredientContainer.appendChild(row);
-        });
-
-        document.getElementById("original-people").value = parseInt(recipeData.recipeYield) || 4;
-
-      } catch (err) {
-        console.error(err);
-        alert("Errore nel caricamento della ricetta.");
       }
+
+      if (!ricetta) return alert('Nessuna ricetta trovata.');
+
+      const original = parseFloat(ricetta.recipeYield?.toString().match(/\d+/)?.[0] || 1);
+      document.getElementById('originalPortions').value = original;
+      document.getElementById('desiredPortions').value = desired;
+      document.getElementById('ingredienti').innerHTML = '';
+
+      ricetta.recipeIngredient.forEach(ing => {
+        const [nome, quantita, unita] = parseIngredienteStringa(ing);
+        aggiungiIngrediente(nome, quantita || '', unita || '');
+      });
+    } catch (e) {
+      alert('Errore durante il caricamento della ricetta.');
     }
-  </script>
+  }
+</script>
 </body>
 </html>
