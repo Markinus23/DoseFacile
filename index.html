@@ -1,198 +1,120 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ricalcolatore Ricette</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background: #f4f4f4;
+    body { font-family: Arial, sans-serif; margin: 20px; background: #fefefe; }
+    h1 { text-align: center; }
+    .container { max-width: 800px; margin: auto; }
+    input, select, button, textarea {
+      padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; width: 100%;
     }
-    h2 {
-      margin-top: 2rem;
+    .ingredient-row {
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 5px;
     }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
+    .button-row { display: flex; justify-content: space-between; margin-top: 15px; }
+    .output-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .output-table th, .output-table td {
+      border: 1px solid #ccc; padding: 8px; text-align: left;
     }
-    .row {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .row input, .row select {
-      padding: 0.5rem;
-    }
-    .btn {
-      padding: 0.5rem 1rem;
-      background: #2196F3;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      margin-right: 0.5rem;
-    }
-    .btn:hover {
-      background: #1976D2;
-    }
-    .output {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #e8f0fe;
-      border-radius: 8px;
-    }
-    .output table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .output th, .output td {
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
+    .output-table th { background: #eee; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Ricalcolatore Ricette</h1>
+    <h1>🍝 Ricalcolatore Ricette</h1>
 
-    <h2>1. Inserisci il link di una ricetta</h2>
-    <label>URL della ricetta:
-      <input type="text" id="ricetta-url" style="width: 100%;" placeholder="https://ricette.giallozafferano.it/..." />
-    </label>
-    <button class="btn" onclick="alert('Funzionalità ancora da implementare')">Estrai e Ricalcola (non attivo)</button>
+    <h3>Inserisci un link a una ricetta online</h3>
+    <input type="text" id="url" placeholder="https://...">
+    <button onclick="fetchIngredientsFromURL()">Estrai ingredienti dal link</button>
 
-    <h2>2. Inserisci Ingredienti Manualmente</h2>
+    <hr>
+
+    <h3>Oppure inserisci manualmente la ricetta</h3>
     <div id="ingredienti-container"></div>
-    <button class="btn" onclick="aggiungiIngrediente()">+ Aggiungi Ingrediente</button>
-    <button class="btn" onclick="suddividiIngredienti()">Estrai e Suddividi</button>
+    <button onclick="aggiungiIngrediente()">➕ Aggiungi Ingrediente</button>
 
-    <h2>3. Numero di porzioni</h2>
-    <label>Originali: <input type="number" id="porzioni-originali" value="4" /></label>
-    <label>Desiderate: <input type="number" id="porzioni-desiderate" value="2" /></label>
-    <br/>
-    <button class="btn" onclick="ricalcola()">Calcola</button>
-
-    <div class="output" id="output" style="display:none;">
-      <h3>Ingredienti Ricalcolati</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Ingrediente</th>
-            <th>Originale</th>
-            <th>Ricalcolato</th>
-          </tr>
-        </thead>
-        <tbody id="output-body"></tbody>
-      </table>
-      <button class="btn" onclick="window.print()">Stampa</button>
+    <div class="button-row">
+      <input type="number" id="porzioni-originali" placeholder="Porzioni originali">
+      <input type="number" id="porzioni-desiderate" placeholder="Porzioni desiderate">
+      <button onclick="ricalcolaDosi()">📊 Calcola</button>
     </div>
+
+    <div id="output"></div>
+    <button onclick="window.print()">🖨️ Stampa</button>
   </div>
 
   <script>
-    const unitaMisura = [
-      "g", "kg", "ml", "l", "pz", "cucchiaio", "cucchiaino", "bicchiere", "q.b.", "-"
-    ];
+    const container = document.getElementById('ingredienti-container');
 
-    function aggiungiIngrediente(nome='', quantita='', unita='') {
-      const container = document.getElementById('ingredienti-container');
-
+    function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
       const row = document.createElement('div');
-      row.className = 'row';
-
-      const inputNome = document.createElement('input');
-      inputNome.placeholder = "Ingrediente";
-      inputNome.value = nome;
-
-      const inputQuantita = document.createElement('input');
-      inputQuantita.type = 'number';
-      inputQuantita.placeholder = "Quantità";
-      inputQuantita.value = quantita;
-
-      const selectUnita = document.createElement('select');
-      for (const u of unitaMisura) {
-        const opt = document.createElement('option');
-        opt.value = u;
-        opt.text = u;
-        if (u === unita) opt.selected = true;
-        selectUnita.appendChild(opt);
-      }
-
-      row.appendChild(inputNome);
-      row.appendChild(inputQuantita);
-      row.appendChild(selectUnita);
+      row.className = 'ingredient-row';
+      row.innerHTML = `
+        <input type="text" placeholder="Ingrediente" value="${nome}">
+        <input type="number" placeholder="Quantità" value="${quantita}">
+        <select>
+          <option value="g">g</option>
+          <option value="ml">ml</option>
+          <option value="kg">kg</option>
+          <option value="l">l</option>
+          <option value="pz">pz</option>
+          <option value="q.b.">q.b.</option>
+          <option value="cucchiai">cucchiai</option>
+          <option value="cucchiaini">cucchiaini</option>
+        </select>
+      `;
+      row.querySelector('select').value = unita;
       container.appendChild(row);
     }
 
-    function suddividiIngredienti() {
-      const container = document.getElementById('ingredienti-container');
-      const righe = container.querySelectorAll('.row');
-      const pattern = /^(.+?)\s*(\d+[\.,]?\d*)\s*(g|kg|ml|l|pz|cucchiaio|cucchiaino|bicchiere|q\.b\.)?$/i;
+    function ricalcolaDosi() {
+      const porzioniOrig = parseFloat(document.getElementById('porzioni-originali').value);
+      const porzioniNew = parseFloat(document.getElementById('porzioni-desiderate').value);
+      const rows = container.querySelectorAll('.ingredient-row');
 
-      righe.forEach(riga => {
-        const nomeField = riga.children[0];
-        const match = nomeField.value.trim().match(pattern);
-        if (match) {
-          const [ , ingrediente, quantità, unita ] = match;
-          nomeField.value = ingrediente.trim();
-          riga.children[1].value = parseFloat(quantità.replace(",", "."));
-          if (unita) {
-            for (let option of riga.children[2].options) {
-              if (option.value.toLowerCase() === unita.toLowerCase()) {
-                option.selected = true;
-                break;
-              }
-            }
+      let html = '<table class="output-table"><tr><th>Ingrediente</th><th>Originale</th><th>Ricalcolato</th></tr>';
+      rows.forEach(row => {
+        const [nome, quantita, unita] = row.querySelectorAll('input, select');
+        const nomeVal = nome.value;
+        const quant = parseFloat(quantita.value);
+        const unitaVal = unita.value;
+        if (!isNaN(quant) && porzioniOrig > 0 && porzioniNew > 0) {
+          const nuovaQ = unitaVal === 'pz' ? (quant * porzioniNew / porzioniOrig).toFixed(1) : Math.round(quant * porzioniNew / porzioniOrig);
+          html += `<tr><td>${nomeVal}</td><td>${quant}${unitaVal}</td><td>${nuovaQ}${unitaVal}</td></tr>`;
+        }
+      });
+      html += '</table>';
+      document.getElementById('output').innerHTML = html;
+    }
+
+    async function fetchIngredientsFromURL() {
+      const url = document.getElementById('url').value;
+      try {
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, 'text/html');
+        const items = [...doc.querySelectorAll('li')];
+        const ingredients = items.map(li => li.textContent.trim()).filter(t => /\d/.test(t) && t.length < 60);
+
+        container.innerHTML = '';
+        ingredients.forEach(line => {
+          const parts = line.split(' ');
+          const quant = parseFloat(parts[0]);
+          const unita = parts[1] && /[a-zA-Z]/.test(parts[1]) ? parts[1] : 'g';
+          const nome = parts.slice(2).join(' ') || line;
+          if (!isNaN(quant)) {
+            aggiungiIngrediente(nome, quant, unita);
           }
-        }
-      });
+        });
+      } catch (e) {
+        alert('Errore durante il recupero della ricetta. Inserisci manualmente.');
+      }
     }
-
-    function ricalcola() {
-      const originali = parseFloat(document.getElementById('porzioni-originali').value);
-      const desiderate = parseFloat(document.getElementById('porzioni-desiderate').value);
-      const moltiplicatore = desiderate / originali;
-
-      const righe = document.querySelectorAll('#ingredienti-container .row');
-      const outputBody = document.getElementById('output-body');
-      outputBody.innerHTML = '';
-
-      righe.forEach(riga => {
-        const nome = riga.children[0].value;
-        const quantita = parseFloat(riga.children[1].value);
-        const unita = riga.children[2].value;
-
-        if (!isNaN(quantita)) {
-          const ricalcolato = (unita === 'pz' || unita === 'cucchiaio' || unita === 'cucchiaino') 
-            ? (quantita * moltiplicatore).toFixed(1) 
-            : Math.round(quantita * moltiplicatore);
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${nome}</td>
-            <td>${quantita} ${unita}</td>
-            <td>${ricalcolato} ${unita}</td>
-          `;
-          outputBody.appendChild(tr);
-        }
-      });
-
-      document.getElementById('output').style.display = 'block';
-    }
-
-    // Avvio con alcune righe precompilate
-    aggiungiIngrediente();
-    aggiungiIngrediente();
-    aggiungiIngrediente();
   </script>
 </body>
 </html>
-
 
