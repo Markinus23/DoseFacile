@@ -96,6 +96,53 @@
     'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'pizzico', 'pizzichi'
   ];
 
+  // Funzione per separare ingrediente, quantità e unità di misura
+  function parseIngredienteStringa(str) {
+    const regex = /(\d+[.,\/]?\d*|½|¼|¾)?\s*(\w+)?\s*(.*)/;
+    const match = str.match(regex);
+    if (!match) return ['', '', str];
+    let [_, quant, unit, name] = match;
+    quant = quant?.replace(',', '.') === '½' ? 0.5 : quant?.replace(',', '.') === '¼' ? 0.25 : quant?.replace(',', '.') === '¾' ? 0.75 : quant;
+    return [name, parseFloat(quant), unit];
+  }
+
+  async function caricaRicettaDaURL() {
+    const url = document.getElementById('urlInput').value;
+    const desired = parseFloat(document.getElementById('desiredPortionsURL').value);
+
+    try {
+      const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+
+      let ricetta;
+      for (let s of scripts) {
+        const json = JSON.parse(s.textContent);
+        if (json['@type'] === 'Recipe' || (Array.isArray(json['@type']) && json['@type'].includes('Recipe'))) {
+          ricetta = json;
+          break;
+        }
+      }
+
+      if (!ricetta) return alert('Nessuna ricetta trovata.');
+
+      const original = parseFloat(ricetta.recipeYield?.toString().match(/\d+/)?.[0] || 1);
+      document.getElementById('originalPortions').value = original;
+      document.getElementById('desiredPortions').value = desired;
+      document.getElementById('ingredienti').innerHTML = '';
+
+      ricetta.recipeIngredient.forEach(ing => {
+        const [nome, quantita, unita] = parseIngredienteStringa(ing);
+        aggiungiIngrediente(nome, quantita || '', unita || '');
+      });
+    } catch (e) {
+      alert('Errore durante il caricamento della ricetta.');
+    }
+  }
+
   function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
     const div = document.createElement('div');
     div.className = 'ingrediente-row';
@@ -130,27 +177,6 @@
       `;
       tbody.appendChild(tr);
     });
-  }
-
-  async function caricaRicettaDaURL() {
-    const url = document.getElementById('urlInput').value;
-    const desired = parseFloat(document.getElementById('desiredPortionsURL').value);
-
-    try {
-      const response = await fetch(`http://localhost:3000/api/estrai?url=${encodeURIComponent(url)}`);
-      const data = await response.json();
-
-      const original = parseFloat(data.yield || 1);
-      document.getElementById('originalPortions').value = original;
-      document.getElementById('desiredPortions').value = desired;
-      document.getElementById('ingredienti').innerHTML = '';
-
-      data.ingredients.forEach(ing => {
-        aggiungiIngrediente(ing.name, ing.amount || '', ing.unit || '');
-      });
-    } catch (e) {
-      alert('Errore durante il caricamento della ricetta.');
-    }
   }
 </script>
 </body>
