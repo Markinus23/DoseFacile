@@ -1,183 +1,529 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ricalcolatore Ricette</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff9f2;
-      margin: 0;
-      padding: 20px;
-    }
-    h1, h2 {
-      color: #333;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    input, select, button {
-      padding: 6px 10px;
-      margin: 5px;
-      font-size: 1rem;
-    }
-    .ingrediente-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-    .ingrediente-row input, .ingrediente-row select {
-      flex: 1;
-      min-width: 100px;
-    }
-    .output {
-      background-color: #f1f1f1;
-      padding: 10px;
-      margin-top: 20px;
-    }
-    .button-group {
-      margin-top: 10px;
-    }
-    .ingredient-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .ingredient-table th, .ingredient-table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    .ingredient-table th {
-      background-color: #f7e1c7;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ricalcolatore Ricette</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fff9f2;
+            margin: 0;
+            padding: 20px;
+            font-size: 16px; /* Base font size */
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        label {
+             display: block;
+             margin-bottom: 5px;
+             font-weight: bold;
+             color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        button {
+            padding: 8px 12px;
+            margin: 5px 0; /* Adjusted margin */
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+        }
+        input[type="text"], input[type="url"] {
+             width: 100%; /* Make text inputs take full width */
+        }
+
+        button {
+            background-color: #e8a87c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 5px; /* Space between buttons */
+        }
+        button:hover {
+            background-color: #c38d9e;
+        }
+        .input-group {
+             display: flex;
+             gap: 10px;
+             align-items: center;
+             margin-bottom: 15px;
+             flex-wrap: wrap;
+        }
+         .input-group label {
+             flex-basis: 100px; /* Fixed width for labels */
+             margin-bottom: 0; /* Remove bottom margin for inline elements */
+         }
+         .input-group input[type="text"],
+         .input-group input[type="number"] {
+             flex-grow: 1; /* Allow inputs to grow */
+             min-width: 150px;
+         }
+
+
+        .ingrediente-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Increased gap */
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee; /* Separator */
+            align-items: center; /* Align items vertically */
+        }
+        .ingrediente-row:last-child {
+            border-bottom: none;
+        }
+        .ingrediente-row input[type="text"] { flex: 3; min-width: 150px; } /* More space for name */
+        .ingrediente-row input[type="number"] { flex: 1; min-width: 80px; }
+        .ingrediente-row select { flex: 1; min-width: 100px; }
+        .ingrediente-row button { flex-basis: 30px; padding: 5px; background-color: #f08080; font-size: 0.8em;} /* Small remove button */
+
+        .output {
+            background-color: #f8f8f8;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        .button-group {
+            margin-top: 20px; /* More space above buttons */
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .ingredient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px; /* Space above table */
+        }
+        .ingredient-table th, .ingredient-table td {
+            border: 1px solid #ccc;
+            padding: 10px; /* Increased padding */
+            text-align: left;
+            vertical-align: top; /* Align content top */
+        }
+        .ingredient-table th {
+            background-color: #f7e1c7;
+            color: #333;
+        }
+        .ingredient-table td:nth-child(2), /* Original Dose */
+        .ingredient-table td:nth-child(3) { /* Recalculated Dose */
+            text-align: right;
+            white-space: nowrap; /* Prevent wrapping of dose+unit */
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 <body>
 <div class="container">
-  <h1>🧮 Ricalcolatore Ricette</h1>
+    <h1><span style="font-size: 1.5em;">🍳</span> Ricalcolatore Ricette</h1>
+    <p>Estrai ingredienti da un URL o inseriscili manualmente e ricalcola le dosi.</p>
+    <div id="error-message"></div>
 
-  <h2>Parte 1: Inserisci URL di una ricetta</h2>
-  <input type="text" id="urlInput" placeholder="Incolla qui l'URL della ricetta..." size="60">
-  <input type="number" id="desiredPortionsURL" placeholder="Porzioni desiderate">
-  <button onclick="caricaRicettaDaURL()">Carica e Ricalcola</button>
+    <h2>Parte 1: Carica da URL</h2>
+    <div class="input-group">
+         <label for="urlInput">URL Ricetta:</label>
+         <input type="text" id="urlInput" placeholder="Incolla qui l'URL della ricetta..." size="60">
+    </div>
+     <div class="input-group">
+        <label for="desiredPortionsURL">Porzioni Desiderate:</label>
+        <input type="number" id="desiredPortionsURL" placeholder="Es. 4" min="1">
+        <button onclick="caricaRicettaDaURL()">Carica e Ricalcola da URL</button>
+    </div>
 
-  <h2>Parte 2: Inserisci ricetta manualmente</h2>
-  <input type="number" id="originalPortions" placeholder="Porzioni originali">
-  <input type="number" id="desiredPortions" placeholder="Porzioni desiderate">
-  <div id="ingredienti"></div>
-  <div class="button-group">
-    <button onclick="aggiungiIngrediente()">Aggiungi ingrediente</button>
-    <button onclick="ricalcolaDosi()">Calcola</button>
-    <button onclick="window.print()">Stampa</button>
-  </div>
 
-  <div class="output">
-    <h2>Risultato</h2>
-    <table class="ingredient-table" id="outputTable">
-      <thead>
-        <tr>
-          <th>Ingrediente</th>
-          <th>Dose Originale</th>
-          <th>Dose Ricalcolata</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <h2>Parte 2: Inserisci/Modifica Ricetta Manualmente</h2>
+    <div class="input-group">
+         <label for="originalPortions">Porzioni Originali:</label>
+        <input type="number" id="originalPortions" placeholder="Es. 2" min="1">
+         <label for="desiredPortions">Porzioni Desiderate:</label>
+        <input type="number" id="desiredPortions" placeholder="Es. 4" min="1">
+    </div>
+
+    <h3>Ingredienti</h3>
+    <div id="ingredienti">
+        </div>
+    <div class="button-group">
+        <button onclick="aggiungiIngrediente()">Aggiungi Ingrediente Vuoto</button>
+        <button onclick="ricalcolaDosi()">Ricalcola Dosi Manuali</button>
+        <button onclick="window.print()">Stampa Risultato</button>
+    </div>
+
+    <div class="output">
+        <h2>Risultato Ricalcolato</h2>
+        <table class="ingredient-table" id="outputTable">
+            <thead>
+                <tr>
+                    <th>Ingrediente</th>
+                    <th>Dose Originale</th>
+                    <th>Dose Ricalcolata</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="3" style="text-align:center; color: #888;">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-  const unitaMisura = [
-    'g', 'kg', 'ml', 'l', 'pz', 'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai',
-    'bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette', 'spicchio', 'spicchi',
-    'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'pizzico', 'pizzichi'
-  ];
+    const unitaMisura = [
+        '', 'g', 'gr', 'hg', 'kg', 'ml', 'cl', 'dl', 'l', 'pz', 'numero',
+        'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai',
+        'bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette',
+        'spicchio', 'spicchi', 'scatola', 'scatolette', 'bustina', 'bustine',
+        'confezione', 'confezioni', 'pizzico', 'pizzichi', 'q.b.', 'foglia', 'foglie',
+        'gambo', 'gambi', 'rametto', 'rametti', 'barattolo', 'vasetto'
+    ].sort((a, b) => b.length - a.length); // Sort by length DESC to match longer units first
 
-  // Funzione per separare ingrediente, quantità e unità di misura
-  function parseIngredienteStringa(str) {
-    const regex = /(\d+[.,\/]?\d*|½|¼|¾)?\s*(\w+)?\s*(.*)/;
-    const match = str.match(regex);
-    if (!match) return ['', '', str];
-    let [_, quant, unit, name] = match;
-    quant = quant?.replace(',', '.') === '½' ? 0.5 : quant?.replace(',', '.') === '¼' ? 0.25 : quant?.replace(',', '.') === '¾' ? 0.75 : quant;
-    return [name, parseFloat(quant), unit];
-  }
+    const unitaIntere = ['pz', 'numero', 'fetta', 'fette', 'spicchio', 'spicchi', 'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'foglia', 'foglie', 'gambo', 'gambi', 'rametto', 'rametti', 'barattolo', 'vasetto'];
 
-  async function caricaRicettaDaURL() {
-    const url = document.getElementById('urlInput').value;
-    const desired = parseFloat(document.getElementById('desiredPortionsURL').value);
+    const errorDiv = document.getElementById('error-message');
 
-    try {
-      const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-      const html = await response.text();
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
-
-      let ricetta;
-      for (let s of scripts) {
-        const json = JSON.parse(s.textContent);
-        if (json['@type'] === 'Recipe' || (Array.isArray(json['@type']) && json['@type'].includes('Recipe'))) {
-          ricetta = json;
-          break;
-        }
-      }
-
-      if (!ricetta) return alert('Nessuna ricetta trovata.');
-
-      const original = parseFloat(ricetta.recipeYield?.toString().match(/\d+/)?.[0] || 1);
-      document.getElementById('originalPortions').value = original;
-      document.getElementById('desiredPortions').value = desired;
-      document.getElementById('ingredienti').innerHTML = '';
-
-      ricetta.recipeIngredient.forEach(ing => {
-        const [nome, quantita, unita] = parseIngredienteStringa(ing);
-        aggiungiIngrediente(nome, quantita || '', unita || '');
-      });
-    } catch (e) {
-      alert('Errore durante il caricamento della ricetta.');
+    function displayError(message) {
+        errorDiv.textContent = message;
     }
-  }
 
-  function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
-    const div = document.createElement('div');
-    div.className = 'ingrediente-row';
-    div.innerHTML = `
-      <input type="text" placeholder="Ingrediente" value="${nome}">
-      <input type="number" placeholder="Quantità" value="${quantita}">
-      <select>
-        ${unitaMisura.map(u => `<option value="${u}" ${u === unita ? 'selected' : ''}>${u}</option>`).join('')}
-      </select>
-    `;
-    document.getElementById('ingredienti').appendChild(div);
-  }
+    function clearError() {
+        errorDiv.textContent = '';
+    }
 
-  function ricalcolaDosi() {
-    const original = parseFloat(document.getElementById('originalPortions').value);
-    const desired = parseFloat(document.getElementById('desiredPortions').value);
-    const fattore = desired / original;
-    const tbody = document.querySelector('#outputTable tbody');
-    tbody.innerHTML = '';
+    // Helper to parse numeric quantity strings (including fractions)
+    function parseQuantity(qtyStr) {
+        if (!qtyStr) return NaN;
+        qtyStr = String(qtyStr).trim().toLowerCase().replace(',', '.'); // Ensure string, trim, normalize decimal
 
-    document.querySelectorAll('#ingredienti .ingrediente-row').forEach(row => {
-      const nome = row.children[0].value;
-      const quantita = parseFloat(row.children[1].value);
-      const unita = row.children[2].value;
-      const ricalcolata = unita.includes('pz') ? quantita * fattore : Math.round(quantita * fattore);
+        if (qtyStr === 'q.b.' || qtyStr === 'quanto basta' || qtyStr === 'un pizzico' || qtyStr === 'pizzico') return NaN; // Explicit non-numeric handled elsewhere
 
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${nome}</td>
-        <td>${quantita} ${unita}</td>
-        <td>${ricalcolata} ${unita}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+        // Handle common fraction symbols
+        if (qtyStr === '½') return 0.5;
+        if (qtyStr === '¼') return 0.25;
+        if (qtyStr === '¾') return 0.75;
+        if (qtyStr === '⅓') return 1/3;
+        if (qtyStr === '⅔') return 2/3;
+
+        // Handle mixed fractions like "1 1/2"
+        const mixedMatch = qtyStr.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+        if (mixedMatch) {
+            return parseInt(mixedMatch[1], 10) + (parseInt(mixedMatch[2], 10) / parseInt(mixedMatch[3], 10));
+        }
+
+        // Handle simple fractions like "1/2"
+        const fractionMatch = qtyStr.match(/^(\d+)\/(\d+)$/);
+        if (fractionMatch) {
+            return parseInt(fractionMatch[1], 10) / parseInt(fractionMatch[2], 10);
+        }
+
+        // Handle standard numbers (integers, decimals) - remove extra text like "circa"
+        const numericPart = qtyStr.match(/^[^\d]*(\d+(\.\d+)?)/);
+         if (numericPart && numericPart[1]) {
+             const num = parseFloat(numericPart[1]);
+             return isNaN(num) ? NaN : num;
+         }
+
+
+        // Fallback if no parsable number found
+        return NaN;
+    }
+
+
+    // Improved function to parse ingredient string
+    function parseIngredienteStringa(str) {
+        if (!str) return { nome: '', quantita: NaN, unita: '' };
+        let originalStr = str;
+        str = str.trim().toLowerCase();
+
+        // --- Special Cases ---
+        if (str.includes('q.b.') || str.includes('quanto basta')) {
+            let nome = originalStr.replace(/q\.b\.|quanto basta/i, '').replace(/di|per/i, '').trim();
+            return { nome: nome || 'Ingrediente', quantita: NaN, unita: 'q.b.' };
+        }
+         if (str.includes('pizzico')) {
+             let nome = originalStr.replace(/(un\s*)?pizzico(\s*di)?/i, '').trim();
+             return { nome: nome || 'Ingrediente', quantita: 1, unita: 'pizzico' }; // Assign quantita 1? Or NaN? Let's use 1 for recalculation.
+         }
+         // Add more special cases as needed (e.g., 'a piacere')
+
+        let quantita = NaN;
+        let unita = '';
+        let nome = originalStr.trim(); // Start with original string for name preservation
+
+        // --- Regex approach: Find number, then unit, then name ---
+        // Regex to find the first number (integer, decimal, fraction x/y, symbols)
+        const numRegex = /(\d+\s+\d+\/\d+|\d+[\.,\/]\d+|\d+|½|¼|¾|⅓|⅔)/;
+        const numMatch = str.match(numRegex);
+
+        if (numMatch) {
+            const quantitaStr = numMatch[0];
+            quantita = parseQuantity(quantitaStr);
+            const numIndexEnd = numMatch.index + quantitaStr.length;
+
+            // Try to find a known unit immediately after the number
+            let potentialUnitPart = str.substring(numIndexEnd).trim();
+            let unitFound = false;
+            for (const u of unitaMisura) {
+                if (u && potentialUnitPart.startsWith(u + ' ') || potentialUnitPart === u) { // Check with space or exact match
+                    unita = u;
+                    unitFound = true;
+                    // Refine the name: combine part before number and part after unit
+                     const partBefore = originalStr.substring(0, numMatch.index).trim();
+                     const partAfter = originalStr.substring(numIndexEnd + u.length).trim();
+                     nome = `${partBefore} ${partAfter}`.replace(/^di|^d'|^per/i, '').replace(/di$|d'$|per$/i, '').trim();
+                     break; // Stop after finding the first (longest) unit
+                }
+            }
+
+            // If no unit found after number, assume the rest is the name
+            if (!unitFound) {
+                 const partBefore = originalStr.substring(0, numMatch.index).trim();
+                 const partAfter = originalStr.substring(numIndexEnd).trim();
+                 nome = `${partBefore} ${partAfter}`.replace(/^di|^d'|^per/i, '').replace(/di$|d'$|per$/i, '').trim();
+                 // Could heuristically assign 'pz' if name looks plural/countable, but keep it simple
+                 unita = ''; // No unit identified
+            }
+        } else {
+           // No number found - assume the whole string is the name, no quantity/unit
+           quantita = NaN; // Or should we assume 1? Let's stick with NaN
+           unita = '';
+           nome = originalStr.trim();
+        }
+
+
+        // Final cleanup for common cases
+        if (!nome && !isNaN(quantita) && unita) {
+            nome = `Ingrediente (${unita})`; // Placeholder if name extraction failed but got number/unit
+        } else if (!nome && isNaN(quantita) && !unita) {
+             nome = originalStr || 'Ingrediente sconosciuto'; // Fallback
+        }
+
+        return { nome: nome || 'Ingrediente', quantita, unita };
+    }
+
+    async function caricaRicettaDaURL() {
+        clearError();
+        const urlInput = document.getElementById('urlInput');
+        const url = urlInput.value.trim();
+         const desiredPortionsInput = document.getElementById('desiredPortionsURL');
+         const desired = parseFloat(desiredPortionsInput.value);
+
+        if (!url) {
+            displayError('Per favore, inserisci un URL valido.');
+            return;
+        }
+        if (isNaN(desired) || desired <= 0) {
+             displayError('Per favore, inserisci un numero valido di porzioni desiderate (> 0).');
+             return;
+        }
+
+
+        // Clear previous results and manual inputs
+        document.getElementById('ingredienti').innerHTML = '';
+        document.querySelector('#outputTable tbody').innerHTML = '<tr><td colspan="3" style="text-align:center;">Caricamento ricetta...</td></tr>';
+        document.getElementById('originalPortions').value = '';
+        document.getElementById('desiredPortions').value = desired; // Pre-fill desired portions for manual section
+
+        try {
+            // Using allorigins.win as a CORS proxy (can be unreliable or blocked)
+            // A server-side proxy would be more robust.
+            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+            if (!response.ok) {
+                 throw new Error(`Errore di rete: ${response.statusText} (Il proxy potrebbe essere bloccato o il sito non raggiungibile)`);
+            }
+            const html = await response.text();
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Find JSON-LD script tags containing Recipe schema
+            const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+            let ricetta = null;
+
+            for (let s of scripts) {
+                try {
+                    const json = JSON.parse(s.textContent);
+                    // Check if it's a single recipe object or an array containing a recipe
+                    if (json['@type'] === 'Recipe' || (Array.isArray(json['@type']) && json['@type'].includes('Recipe'))) {
+                        ricetta = json;
+                        break; // Found the main recipe
+                    } else if (json['@graph']) { // Check within @graph array
+                         const recipeInGraph = json['@graph'].find(item => item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe')));
+                         if (recipeInGraph) {
+                             ricetta = recipeInGraph;
+                             break;
+                         }
+                    }
+                } catch (e) {
+                    console.warn("Errore nel parsing di un JSON-LD:", e);
+                    // Continue searching other script tags
+                }
+            }
+
+            if (!ricetta || !ricetta.recipeIngredient || ricetta.recipeIngredient.length === 0) {
+                 displayError('Nessun dato ricetta strutturato (JSON-LD Schema Recipe) trovato o nessun ingrediente presente in esso. L\'estrazione automatica potrebbe non funzionare per questo sito.');
+                 document.querySelector('#outputTable tbody').innerHTML = '<tr><td colspan="3" style="text-align:center; color: #888;">Estrazione automatica fallita. Inserisci manualmente.</td></tr>';
+                 return;
+            }
+
+            // Extract original portions (yield) - handle variations
+            let originalYield = 1; // Default
+            if (ricetta.recipeYield) {
+                 let yieldStr = Array.isArray(ricetta.recipeYield) ? ricetta.recipeYield[0] : ricetta.recipeYield; // Take first if array
+                 yieldStr = yieldStr.toString();
+                 const match = yieldStr.match(/\d+/); // Get the first number
+                 if (match) {
+                     originalYield = parseFloat(match[0]);
+                 }
+            }
+             if (originalYield <= 0) originalYield = 1; // Ensure valid portion number
+
+
+            document.getElementById('originalPortions').value = originalYield;
+
+
+            // Populate the manual input fields with extracted ingredients
+            ricetta.recipeIngredient.forEach(ingString => {
+                const { nome, quantita, unita } = parseIngredienteStringa(ingString);
+                aggiungiIngrediente(nome, isNaN(quantita) ? '' : quantita, unita); // Pass empty string if quantita is NaN
+            });
+
+             // Automatically trigger recalculation after loading
+             ricalcolaDosi();
+
+        } catch (e) {
+             console.error("Errore durante il caricamento o parsing:", e);
+             displayError(`Errore: ${e.message}. Potrebbe esserci un problema con l'URL, il sito web, il proxy CORS, o i dati della ricetta.`);
+              document.querySelector('#outputTable tbody').innerHTML = `<tr><td colspan="3" style="text-align:center; color: red;">Errore durante il caricamento. Dettagli in console.</td></tr>`;
+        }
+    }
+
+    function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
+        const div = document.createElement('div');
+        div.className = 'ingrediente-row';
+
+        // Find the correct unit from the list, case-insensitive
+         const lowerCaseUnita = String(unita).toLowerCase();
+         const selectedUnit = unitaMisura.find(u => u.toLowerCase() === lowerCaseUnita) || ''; // Fallback to empty
+
+
+        div.innerHTML = `
+            <input type="text" placeholder="Nome ingrediente" value="${nome}" aria-label="Nome ingrediente">
+            <input type="number" step="any" placeholder="Q.tà" value="${quantita}" aria-label="Quantità originale">
+            <select aria-label="Unità di misura">
+                ${unitaMisura.map(u =>
+                    `<option value="${u}" ${u === selectedUnit ? 'selected' : ''}>${u || 'Nessuna'}</option>`
+                 ).join('')}
+            </select>
+             <button type="button" onclick="this.parentElement.remove()" title="Rimuovi ingrediente" aria-label="Rimuovi ingrediente">X</button>
+        `;
+        document.getElementById('ingredienti').appendChild(div);
+    }
+
+    function ricalcolaDosi() {
+        clearError();
+        const originalPortionsInput = document.getElementById('originalPortions');
+        const desiredPortionsInput = document.getElementById('desiredPortions');
+        const original = parseFloat(originalPortionsInput.value);
+        const desired = parseFloat(desiredPortionsInput.value);
+
+        if (isNaN(original) || original <= 0) {
+            displayError("Inserisci un numero valido (> 0) per le porzioni originali.");
+            return;
+        }
+        if (isNaN(desired) || desired <= 0) {
+            displayError("Inserisci un numero valido (> 0) per le porzioni desiderate.");
+            return;
+        }
+
+        const fattore = desired / original;
+        const tbody = document.querySelector('#outputTable tbody');
+        tbody.innerHTML = ''; // Clear previous results
+
+        const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row');
+
+        if (ingredientRows.length === 0) {
+             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #888;">Nessun ingrediente inserito.</td></tr>';
+             return;
+        }
+
+
+        ingredientRows.forEach(row => {
+            const nomeInput = row.children[0];
+            const quantitaInput = row.children[1];
+            const unitaSelect = row.children[2];
+
+            const nome = nomeInput.value.trim() || 'Ingrediente non specificato';
+            const quantitaOrigStr = quantitaInput.value;
+            const quantitaOrig = parseFloat(quantitaOrigStr); // Allow parsing potential fractions entered manually
+            const unita = unitaSelect.value;
+
+            let quantitaRicalcolataFormatted = 'N/A';
+            let quantitaOriginaleFormatted = `${isNaN(quantitaOrig) ? (quantitaOrigStr || '-') : quantitaOrig} ${unita}`.trim(); // Show original string if not parsable as float
+
+             if (unita === 'q.b.' || isNaN(quantitaOrig)) {
+                 // Handle non-numeric or q.b. - no recalculation needed
+                 quantitaRicalcolataFormatted = unita === 'q.b.' ? 'q.b.' : '-';
+                 quantitaOriginaleFormatted = unita === 'q.b.' ? 'q.b.' : (nome === 'Ingrediente non specificato' ? '-' : nome); // If only name, show that
+             } else {
+                 const ricalcolata = quantitaOrig * fattore;
+
+                // Apply specific formatting based on unit type
+                if (unitaIntere.includes(unita.toLowerCase())) {
+                    quantitaRicalcolataFormatted = Math.round(ricalcolata); // Round pieces, slices etc.
+                } else if (ricalcolata > 0) {
+                    // For g, ml, etc. keep some precision
+                    quantitaRicalcolataFormatted = parseFloat(ricalcolata.toFixed(1)); // Round to 1 decimal place, adjust if needed (e.g., toFixed(2))
+                     // Avoid tiny decimals like 0.0
+                     if (quantitaRicalcolataFormatted < 0.1 && quantitaRicalcolataFormatted > 0) quantitaRicalcolataFormatted = '< 0.1';
+                     else if (quantitaRicalcolataFormatted === 0) quantitaRicalcolataFormatted = 0; // Show 0 explicitly if it is exactly 0
+                } else {
+                    quantitaRicalcolataFormatted = 0; // Handle cases resulting in 0 or less
+                }
+
+                 quantitaRicalcolataFormatted = `${quantitaRicalcolataFormatted} ${unita}`.trim();
+            }
+
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${nome}</td>
+                <td>${quantitaOriginaleFormatted}</td>
+                <td>${quantitaRicalcolataFormatted}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+         if (tbody.innerHTML === '') {
+             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #888;">Nessun ingrediente valido trovato per il ricalcolo.</td></tr>';
+         }
+    }
+
+     // Add initial empty ingredient row for manual input if desired
+     // aggiungiIngrediente();
+
+     // Initialize with empty result table
+     document.addEventListener('DOMContentLoaded', () => {
+          document.querySelector('#outputTable tbody').innerHTML = '<tr><td colspan="3" style="text-align:center; color: #888;">Carica una ricetta da URL o inserisci gli ingredienti manualmente.</td></tr>';
+     });
+
 </script>
 </body>
 </html>
