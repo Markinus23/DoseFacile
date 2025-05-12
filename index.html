@@ -93,8 +93,7 @@
   const unitaMisura = [
     'g', 'kg', 'ml', 'l', 'pz', 'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai',
     'bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette', 'spicchio', 'spicchi',
-    'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni',
-    'pizzico', 'pizzichi', 'q.b.', 'quanto basta'
+    'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'pizzico', 'pizzichi'
   ];
 
   function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
@@ -102,7 +101,7 @@
     div.className = 'ingrediente-row';
     div.innerHTML = `
       <input type="text" placeholder="Ingrediente" value="${nome}">
-      <input type="number" placeholder="Quantità" value="${quantita}">
+      <input type="number" step="any" placeholder="Quantità" value="${quantita}">
       <select>
         ${unitaMisura.map(u => `<option value="${u}" ${u === unita ? 'selected' : ''}>${u}</option>`).join('')}
       </select>
@@ -121,13 +120,13 @@
       const nome = row.children[0].value;
       const quantita = parseFloat(row.children[1].value);
       const unita = row.children[2].value;
-      const ricalcolata = isNaN(quantita) ? '-' : (unita.includes('pz') || unita === 'q.b.') ? quantita * fattore : Math.round(quantita * fattore * 100) / 100;
+      const ricalcolata = quantita ? Math.round(quantita * fattore * 100) / 100 : '';
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${nome}</td>
-        <td>${quantita || '-'} ${unita}</td>
-        <td>${ricalcolata || '-'} ${unita}</td>
+        <td>${quantita} ${unita}</td>
+        <td>${ricalcolata} ${unita}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -137,11 +136,11 @@
     const frazioni = { '½': 0.5, '¼': 0.25, '¾': 0.75 };
     str = str.trim().toLowerCase();
 
-    for (const [fra, val] of Object.entries(frazioni)) {
-      str = str.replace(fra, val);
+    for (const [simbolo, valore] of Object.entries(frazioni)) {
+      str = str.replace(simbolo, valore);
     }
 
-    const regex = /^([\d.,\/]+)?\s*(\b(?:q\.b\.|quanto basta|[a-zA-Z]+)?\b)?(?:\s+di)?\s+(.*)$/;
+    const regex = /^(\d+(?:[.,]\d+)?|\d+\/\d+)?\s*([a-zàèéìòùç]+)?(?:\s+di)?\s+(.*)$/i;
     const match = str.match(regex);
 
     if (!match) return ['', '', str];
@@ -155,10 +154,10 @@
       quant = parseFloat(quant.replace(',', '.'));
     }
 
-    unit = unit?.trim();
-    name = name?.trim();
+    unit = unit?.trim() || '';
+    name = name?.trim() || '';
 
-    return [name || '', quant || '', unit || ''];
+    return [name, quant || '', unit];
   }
 
   async function caricaRicettaDaURL() {
@@ -175,16 +174,25 @@
 
       let ricetta;
       for (let s of scripts) {
-        const json = JSON.parse(s.textContent);
-        if (json['@type'] === 'Recipe' || (Array.isArray(json['@type']) && json['@type'].includes('Recipe'))) {
-          ricetta = json;
-          break;
+        try {
+          const json = JSON.parse(s.textContent);
+          if (json['@type'] === 'Recipe' || (Array.isArray(json['@type']) && json['@type'].includes('Recipe'))) {
+            ricetta = json;
+            break;
+          }
+        } catch (e) {
+          continue;
         }
       }
 
       if (!ricetta) return alert('Nessuna ricetta trovata.');
 
-      const original = parseFloat(ricetta.recipeYield?.toString().match(/\d+/)?.[0] || 1);
+      const original = parseFloat(
+        Array.isArray(ricetta.recipeYield)
+          ? ricetta.recipeYield[0].toString().match(/\d+/)?.[0]
+          : ricetta.recipeYield?.toString().match(/\d+/)?.[0]
+      ) || 1;
+
       document.getElementById('originalPortions').value = original;
       document.getElementById('desiredPortions').value = desired;
       document.getElementById('ingredienti').innerHTML = '';
@@ -195,6 +203,7 @@
       });
     } catch (e) {
       alert('Errore durante il caricamento della ricetta.');
+      console.error(e);
     }
   }
 </script>
