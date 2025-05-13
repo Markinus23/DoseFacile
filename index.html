@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DoseFacile - Ricalcolatore Ricette Avanzato</title>
+    <title>Dose Facile - Ricalcolatore Ricette Avanzato</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom font and minor adjustments */
@@ -52,16 +52,20 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; /* cool-gray-400 */
         }
+        /* Class for highlighting the results section */
+        .highlight-section {
+            transition: box-shadow 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
 <div class="container mx-auto max-w-4xl bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-2xl">
     <header class="mb-8 text-center">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-orange-600">
-            <span class="inline-block align-middle">🍳</span> DoseFacile - Ricalcolatore Ricette
+            <span class="inline-block align-middle">🍳</span> DoseFacile
         </h1>
         <p class="text-gray-600 mt-3 text-sm sm:text-base">
-            Estrai ingredienti da un URL o inseriscili manualmente e ricalcola le dosi.
+            Il tuo assistente per ricalcolare le dosi delle ricette in un attimo!
         </p>
     </header>
 
@@ -115,7 +119,7 @@
         </div>
     </section>
 
-    <section id="output-section" class="p-4 sm:p-6 bg-white rounded-xl shadow-lg border border-gray-200">
+    <section id="output-section" class="p-4 sm:p-6 bg-white rounded-xl shadow-lg border border-gray-200 highlight-section">
         <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5">Risultato Ricalcolato</h2>
         <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
             <table class="min-w-full divide-y divide-gray-200" id="outputTable">
@@ -134,7 +138,7 @@
     </section>
 
     <footer class="mt-12 text-center text-sm text-gray-500">
-        <p>&copy; <span id="currentYear"></span> Ricalcolatore Ricette. Interfaccia migliorata.</p>
+        <p>&copy; <span id="currentYear"></span> Dose Facile. Interfaccia migliorata.</p>
     </footer>
 </div>
 
@@ -160,6 +164,8 @@
     function displayError(message) {
         errorDiv.textContent = message;
         errorDiv.classList.remove('hidden');
+        // Scroll to error message for visibility
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function clearError() {
@@ -219,18 +225,23 @@
 
             for (const u of unitaMisura) {
                 if (!u) continue;
-                const unitRegex = new RegExp(`^${u}\\b`, 'i');
-                if (remainingStrAfterQty.toLowerCase().match(unitRegex)) {
+                // Match unit at the beginning of the string after quantity, as a whole word or exact match
+                const unitRegexAfter = new RegExp(`^${u}(?:\\s|$)`, 'i'); 
+                if (remainingStrAfterQty.toLowerCase().match(unitRegexAfter)) {
                     unita = u;
-                    nome = (remainingStrBeforeQty + " " + remainingStrAfterQty.substring(u.length)).trim();
+                     // Extract the part of the string that actually matched the unit to remove it correctly
+                    const matchedUnitText = remainingStrAfterQty.match(unitRegexAfter)[0].trim();
+                    nome = (remainingStrBeforeQty + " " + remainingStrAfterQty.substring(matchedUnitText.length)).trim();
                     break;
                 }
-                const unitBeforeRegex = new RegExp(`\\b${u}$`, 'i');
-                if(remainingStrBeforeQty.toLowerCase().match(unitBeforeRegex) && !unita) {
+                // Match unit at the end of the string before quantity, as a whole word or exact match
+                const unitRegexBefore = new RegExp(`(?:^|\\s)${u}$`, 'i');
+                if(remainingStrBeforeQty.toLowerCase().match(unitRegexBefore) && !unita) {
                     unita = u;
+                    const matchedUnitText = remainingStrBeforeQty.match(unitRegexBefore)[0].trim();
                     let tempNameHolder = str.replace(quantitaStr, '').replace(new RegExp(`\\b${u}\\b`, 'i'), '').trim();
                     nome = tempNameHolder.replace(/\s*di\s*/gi, ' ').replace(/^per\s+/i, '').trim();
-                    if (!nome) nome = remainingStrAfterQty.trim(); // If removing unit and qty leaves nothing before, name is after
+                    if (!nome) nome = remainingStrAfterQty.trim();
                     break;
                 }
             }
@@ -306,9 +317,9 @@
             if (ricetta.recipeYield) {
                 let yieldValue = Array.isArray(ricetta.recipeYield) ? ricetta.recipeYield[0] : ricetta.recipeYield;
                 if (typeof yieldValue === 'object' && yieldValue !== null && (yieldValue.value || yieldValue.value === 0) ) yieldValue = yieldValue.value;
-                else if (typeof yieldValue === 'string' && yieldValue.includes('-')) { // Handle "4-6 porzioni"
+                else if (typeof yieldValue === 'string' && yieldValue.includes('-')) { 
                     const matchRange = yieldValue.match(/(\d+)\s*-\s*(\d+)/);
-                    if (matchRange) yieldValue = matchRange[1]; // Take the lower end of the range
+                    if (matchRange) yieldValue = matchRange[1]; 
                 }
                 const yieldStr = String(yieldValue);
                 const match = yieldStr.match(/\d+/);
@@ -320,7 +331,7 @@
                 const { nome, quantita, unita } = parseIngredienteStringa(ingString);
                 aggiungiIngrediente(nome, isNaN(quantita) ? '' : quantita, unita);
             });
-            ricalcolaDosi();
+            ricalcolaDosi(); // This will also handle scrolling and highlighting
         } catch (e) {
             console.error("Errore caricamento/parsing ricetta:", e);
             displayError(`Errore: ${e.message}. Controlla la console per dettagli.`);
@@ -331,7 +342,6 @@
     function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
         const container = document.getElementById('ingredienti');
         const div = document.createElement('div');
-        // Responsive classes for ingredient rows
         div.className = 'ingrediente-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow';
 
         const lowerCaseUnita = String(unita).toLowerCase();
@@ -365,12 +375,21 @@
         tbody.innerHTML = ''; 
 
         const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row');
-        if (ingredientRows.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito.</td></tr>';
-            return;
+        if (ingredientRows.length === 0 && !document.getElementById('urlInput').value) { // Check if no ingredients AND no URL was processed
+             tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>';
+             // Non scrollare se non ci sono ingredienti e non si sta processando un URL
+             return;
+        }
+         if (ingredientRows.length === 0 && document.getElementById('urlInput').value && tbody.innerHTML.includes("Caricamento ricetta...")) {
+            // This case means URL was processed but no ingredients were found/parsed by `caricaRicettaDaURL`
+            // `caricaRicettaDaURL` already handles the error message in the table.
+            // We might still want to scroll to the output section to see that message.
         }
 
+
+        let hasValidIngredients = false;
         ingredientRows.forEach(row => {
+            hasValidIngredients = true; // Assume valid if we process at least one row
             const nome = (row.querySelector('input[type="text"]').value.trim() || 'Ingrediente non specificato');
             const quantitaOrigStr = row.querySelector('input[type="number"]').value;
             const quantitaOrig = parseFloat(quantitaOrigStr);
@@ -408,17 +427,31 @@
             tbody.appendChild(tr);
         });
 
-        if (tbody.innerHTML === '') {
+        if (tbody.innerHTML === '') { // If loop didn't run or all ingredients were invalid
             tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente valido per il ricalcolo.</td></tr>';
         }
+
+        // Scroll to results and highlight
+        const outputSection = document.getElementById('output-section');
+        if (outputSection) {
+            // Check if the viewport is small (typical mobile)
+            const isMobile = window.innerWidth < 768; // Tailwind's 'sm' breakpoint is 640px, 'md' is 768px.
+            
+            // Scroll into view
+            // On mobile, 'start' might be better if there's a sticky header or other elements.
+            // On desktop, 'center' might feel smoother if the section isn't too far down.
+            outputSection.scrollIntoView({ behavior: 'smooth', block: isMobile ? 'start' : 'center' });
+
+            // Add highlight effect
+            outputSection.classList.add('ring-4', 'ring-orange-400', 'ring-offset-2', 'transition-all', 'duration-300', 'ease-in-out');
+            outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)'; // Orange-500 with opacity
+
+            setTimeout(() => {
+                outputSection.classList.remove('ring-4', 'ring-orange-400', 'ring-offset-2');
+                outputSection.style.boxShadow = ''; // Reset to default shadow from Tailwind classes
+            }, 2500); // Highlight duration
+        }
     }
-    
-    // Aggiunge una riga ingrediente vuota all'avvio se il contenitore è vuoto (opzionale)
-    // document.addEventListener('DOMContentLoaded', () => {
-    //    if (document.getElementById('ingredienti').children.length === 0) {
-    //        aggiungiIngrediente();
-    //    }
-    // });
 </script>
 </body>
 </html>
