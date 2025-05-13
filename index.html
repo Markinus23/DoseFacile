@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dose Facile - Ricalcolatore Ricette Avanzato</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4387635588154619"
+     crossorigin="anonymous"></script>
     <style>
         /* Custom font and minor adjustments */
         body {
@@ -56,6 +58,16 @@
         .highlight-section {
             transition: box-shadow 0.3s ease-in-out;
         }
+        /* Stile per i contenitori degli annunci AdSense per visibilità e spaziatura */
+        .adsense-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center; /* Centra gli annunci se sono più piccoli del contenitore */
+            min-height: 50px; /* Altezza minima per evitare collasso se l'annuncio non carica */
+            /* Potresti voler aggiungere un bordo durante i test per vedere l'area:
+            border: 1px dashed #ccc; 
+            */
+        }
     </style>
 </head>
 <body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
@@ -68,6 +80,10 @@
             Il tuo assistente per ricalcolare le dosi delle ricette in un attimo!
         </p>
     </header>
+
+    <div class="adsense-container my-6">
+        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Sotto Header]</p> 
+    </div>
 
     <div id="error-message" class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300 hidden text-sm"></div>
 
@@ -136,6 +152,10 @@
             </table>
         </div>
     </section>
+
+    <div class="adsense-container mt-10">
+        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Footer]</p> 
+    </div>
 
     <footer class="mt-12 text-center text-sm text-gray-500">
         <p>&copy; <span id="currentYear"></span> Dose Facile. Interfaccia migliorata.</p>
@@ -225,20 +245,17 @@
 
             for (const u of unitaMisura) {
                 if (!u) continue;
-                // Match unit at the beginning of the string after quantity, as a whole word or exact match
                 const unitRegexAfter = new RegExp(`^${u}(?:\\s|$)`, 'i'); 
                 if (remainingStrAfterQty.toLowerCase().match(unitRegexAfter)) {
                     unita = u;
-                     // Extract the part of the string that actually matched the unit to remove it correctly
                     const matchedUnitText = remainingStrAfterQty.match(unitRegexAfter)[0].trim();
                     nome = (remainingStrBeforeQty + " " + remainingStrAfterQty.substring(matchedUnitText.length)).trim();
                     break;
                 }
-                // Match unit at the end of the string before quantity, as a whole word or exact match
                 const unitRegexBefore = new RegExp(`(?:^|\\s)${u}$`, 'i');
                 if(remainingStrBeforeQty.toLowerCase().match(unitRegexBefore) && !unita) {
                     unita = u;
-                    const matchedUnitText = remainingStrBeforeQty.match(unitRegexBefore)[0].trim();
+                    // const matchedUnitText = remainingStrBeforeQty.match(unitRegexBefore)[0].trim(); // Non usato
                     let tempNameHolder = str.replace(quantitaStr, '').replace(new RegExp(`\\b${u}\\b`, 'i'), '').trim();
                     nome = tempNameHolder.replace(/\s*di\s*/gi, ' ').replace(/^per\s+/i, '').trim();
                     if (!nome) nome = remainingStrAfterQty.trim();
@@ -310,6 +327,9 @@
             if (!ricetta || !ricetta.recipeIngredient || ricetta.recipeIngredient.length === 0) {
                 displayError('Nessun dato ricetta strutturato (JSON-LD) trovato o nessun ingrediente. L\'estrazione automatica potrebbe non funzionare.');
                 outputTbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Estrazione automatica fallita. Inserisci manualmente.</td></tr>';
+                // Anche se fallisce l'estrazione, scrolla per vedere il messaggio
+                const outputSection = document.getElementById('output-section');
+                if (outputSection) outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
                 return;
             }
 
@@ -336,6 +356,8 @@
             console.error("Errore caricamento/parsing ricetta:", e);
             displayError(`Errore: ${e.message}. Controlla la console per dettagli.`);
             outputTbody.innerHTML = `<tr><td colspan="3" class="px-4 py-6 text-center text-red-500">Errore durante il caricamento.</td></tr>`;
+            const outputSection = document.getElementById('output-section');
+            if (outputSection) outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
         }
     }
 
@@ -375,21 +397,20 @@
         tbody.innerHTML = ''; 
 
         const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row');
-        if (ingredientRows.length === 0 && !document.getElementById('urlInput').value) { // Check if no ingredients AND no URL was processed
+        // Modifica: Controlla se ci sono ingredienti *o* se un URL è stato appena processato (anche se non ha prodotto ingredienti)
+        // Questo assicura che lo scroll avvenga anche se l'estrazione URL fallisce nel trovare ingredienti ma l'utente si aspetta un risultato/messaggio.
+        const urlInputProcessed = document.getElementById('urlInput').value && tbody.innerHTML.includes("Caricamento ricetta...");
+
+
+        if (ingredientRows.length === 0 && !urlInputProcessed) { 
              tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>';
-             // Non scrollare se non ci sono ingredienti e non si sta processando un URL
+             // Non scrollare se non ci sono ingredienti e non si sta processando un URL che non ha ancora terminato
              return;
         }
-         if (ingredientRows.length === 0 && document.getElementById('urlInput').value && tbody.innerHTML.includes("Caricamento ricetta...")) {
-            // This case means URL was processed but no ingredients were found/parsed by `caricaRicettaDaURL`
-            // `caricaRicettaDaURL` already handles the error message in the table.
-            // We might still want to scroll to the output section to see that message.
-        }
-
-
-        let hasValidIngredients = false;
+        
+        let hasValidIngredientsInTable = false;
         ingredientRows.forEach(row => {
-            hasValidIngredients = true; // Assume valid if we process at least one row
+            hasValidIngredientsInTable = true; 
             const nome = (row.querySelector('input[type="text"]').value.trim() || 'Ingrediente non specificato');
             const quantitaOrigStr = row.querySelector('input[type="number"]').value;
             const quantitaOrig = parseFloat(quantitaOrigStr);
@@ -427,29 +448,24 @@
             tbody.appendChild(tr);
         });
 
-        if (tbody.innerHTML === '') { // If loop didn't run or all ingredients were invalid
+        if (!hasValidIngredientsInTable && !tbody.innerHTML.includes("Estrazione automatica fallita") && !tbody.innerHTML.includes("Errore durante il caricamento")) { 
+            // Se non ci sono righe valide aggiunte E non c'è già un messaggio di errore specifico da caricaRicettaDaURL
             tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente valido per il ricalcolo.</td></tr>';
         }
 
         // Scroll to results and highlight
         const outputSection = document.getElementById('output-section');
         if (outputSection) {
-            // Check if the viewport is small (typical mobile)
-            const isMobile = window.innerWidth < 768; // Tailwind's 'sm' breakpoint is 640px, 'md' is 768px.
-            
-            // Scroll into view
-            // On mobile, 'start' might be better if there's a sticky header or other elements.
-            // On desktop, 'center' might feel smoother if the section isn't too far down.
+            const isMobile = window.innerWidth < 768; 
             outputSection.scrollIntoView({ behavior: 'smooth', block: isMobile ? 'start' : 'center' });
 
-            // Add highlight effect
             outputSection.classList.add('ring-4', 'ring-orange-400', 'ring-offset-2', 'transition-all', 'duration-300', 'ease-in-out');
-            outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)'; // Orange-500 with opacity
+            outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)'; 
 
             setTimeout(() => {
                 outputSection.classList.remove('ring-4', 'ring-orange-400', 'ring-offset-2');
-                outputSection.style.boxShadow = ''; // Reset to default shadow from Tailwind classes
-            }, 2500); // Highlight duration
+                outputSection.style.boxShadow = ''; 
+            }, 2500); 
         }
     }
 </script>
