@@ -12,7 +12,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-GKXC0VWWMP');
     </script>
     <style>
@@ -22,31 +21,28 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        /* Ensure select dropdowns are not overly transparent on some backgrounds */
         select {
             background-color: white;
         }
-        /* Style for the remove button in ingredient rows */
         .remove-ingredient-btn {
             background-color: #ef4444; /* red-500 */
             color: white;
             border-radius: 9999px; /* pill shape */
-            width: 28px; /* Slightly larger for touch */
-            height: 28px; /* Slightly larger for touch */
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem; /* Larger 'x' */
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-            flex-shrink: 0; /* Prevent shrinking in flex layout */
+            flex-shrink: 0;
         }
         .remove-ingredient-btn:hover {
             background-color: #dc2626; /* red-600 */
             transform: scale(1.1);
         }
-        /* Custom scrollbar for webkit browsers (optional, for aesthetics) */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -62,23 +58,76 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; /* cool-gray-400 */
         }
-        /* Class for highlighting the results section */
         .highlight-section {
             transition: box-shadow 0.3s ease-in-out;
         }
-        /* Stile per i contenitori degli annunci AdSense per visibilità e spaziatura */
         .adsense-container {
             margin-top: 20px;
             margin-bottom: 20px;
-            text-align: center; /* Centra gli annunci se sono più piccoli del contenitore */
-            min-height: 50px; /* Altezza minima per evitare collasso se l'annuncio non carica */
-            /* Potresti voler aggiungere un bordo durante i test per vedere l'area:
-            border: 1px dashed #ccc; 
-            */
+            text-align: center;
+            min-height: 50px;
         }
+
+        /* Stili per il modale di caricamento */
+        .loading-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .loading-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #f97316; /* Orange-600 */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive table: Allow text wrapping on smaller screens */
+        #outputTable td, #outputTable th {
+            padding-left: 0.75rem; /* px-3 */
+            padding-right: 0.75rem; /* px-3 */
+            word-break: break-word; /* Permette al testo di andare a capo se necessario */
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+             #outputTable td, #outputTable th {
+                padding-left: 1rem; /* px-4 */
+                padding-right: 1rem; /* px-4 */
+            }
+            /* Ripristina nowrap per le colonne di quantità su schermi più grandi se desiderato, ma di solito non necessario */
+            /* #outputTable .original-dose-cell, #outputTable .recalculated-dose-cell { white-space: nowrap; } */
+        }
+
     </style>
 </head>
 <body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
+
+<div id="loadingModal" class="loading-modal">
+    <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+        <div class="loading-spinner mb-4"></div>
+        <p class="text-gray-700 text-lg font-medium">Caricamento ricetta...</p>
+        <p class="text-gray-500 text-sm">Attendere prego.</p>
+    </div>
+</div>
+
 <div class="container mx-auto max-w-4xl bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-2xl">
     <header class="mb-8 text-center">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-orange-600">
@@ -90,7 +139,7 @@
     </header>
 
     <div class="adsense-container my-6">
-        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Sotto Header]</p> 
+        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Sotto Header]</p>
     </div>
 
     <div id="error-message" class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300 hidden text-sm"></div>
@@ -149,20 +198,20 @@
             <table class="min-w-full divide-y divide-gray-200" id="outputTable">
                 <thead class="bg-orange-200">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left text-xs sm:text-sm font-medium text-orange-800 uppercase tracking-wider">Ingrediente</th>
-                        <th scope="col" class="px-4 py-3 text-right text-xs sm:text-sm font-medium text-orange-800 uppercase tracking-wider">Dose Originale</th>
-                        <th scope="col" class="px-4 py-3 text-right text-xs sm:text-sm font-medium text-orange-800 uppercase tracking-wider">Dose Ricalcolata</th>
+                        <th scope="col" class="px-3 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium text-orange-800 uppercase tracking-wider">Ingrediente</th>
+                        <th scope="col" class="px-3 sm:px-4 py-3 text-right text-xs sm:text-sm font-medium text-orange-800 uppercase tracking-wider">Dose Originale</th>
+                        <th scope="col" class="px-3 sm:px-4 py-3 text-right text-xs sm:text-sm font-medium text-orange-800 uppercase tracking-wider">Dose Ricalcolata</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                     <tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>
+                     <tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>
                 </tbody>
             </table>
         </div>
     </section>
 
     <div class="adsense-container mt-10">
-        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Footer]</p> 
+        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Footer]</p>
     </div>
 
     <footer class="mt-12 text-center text-sm text-gray-500">
@@ -171,10 +220,9 @@
 </div>
 
 <script>
-    // Imposta l'anno corrente nel footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
+    const loadingModal = document.getElementById('loadingModal');
 
-    // List of units of measure, sorted by length descending to match longer units first
     const unitaMisura = [
         'cucchiaino da caffè', 'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai',
         'bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette',
@@ -184,15 +232,19 @@
         'ml', 'cl', 'dl', 'l', 'gr', 'g', 'hg', 'kg', 'pz', 'numero', 'q.b.', ''
     ].sort((a, b) => b.length - a.length);
 
-    // Units that should typically be whole numbers
     const unitaIntere = ['pz', 'numero', 'fetta', 'fette', 'spicchio', 'spicchi', 'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'foglia', 'foglie', 'gambo', 'gambi', 'rametto', 'rametti', 'barattolo', 'vasetto', 'uovo', 'uova'];
-
     const errorDiv = document.getElementById('error-message');
+
+    function showLoadingModal() {
+        if (loadingModal) loadingModal.classList.add('active');
+    }
+    function hideLoadingModal() {
+        if (loadingModal) loadingModal.classList.remove('active');
+    }
 
     function displayError(message) {
         errorDiv.textContent = message;
         errorDiv.classList.remove('hidden');
-        // Scroll to error message for visibility
         errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
@@ -204,21 +256,15 @@
     function parseQuantity(qtyStr) {
         if (!qtyStr) return NaN;
         let s = String(qtyStr).trim().toLowerCase().replace(',', '.');
-
         if (s === 'q.b.' || s === 'quanto basta' || s === 'un pizzico' || s === 'pizzico') return NaN;
-
         const fractionSymbols = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1/3, '⅔': 2/3, '⅕': 0.2, '⅖': 0.4, '⅗': 0.6, '⅘': 0.8 };
         if (fractionSymbols[s]) return fractionSymbols[s];
-        
         const rangeMatch = s.match(/^(\d+)\s*-\s*\d+/);
         if (rangeMatch) s = rangeMatch[1];
-        
         const mixedMatch = s.match(/^(\d+)\s*(?:e\s*)?(\d+)\/(\d+)$/);
         if (mixedMatch) return parseInt(mixedMatch[1], 10) + (parseInt(mixedMatch[2], 10) / parseInt(mixedMatch[3], 10));
-
         const fractionMatch = s.match(/^(\d+)\/(\d+)$/);
         if (fractionMatch) return parseInt(fractionMatch[1], 10) / parseInt(fractionMatch[2], 10);
-        
         const num = parseFloat(s);
         return isNaN(num) ? NaN : num;
     }
@@ -247,13 +293,12 @@
             quantita = parseQuantity(quantitaStr);
             qtyStartIndex = qtyMatch.index;
             qtyEndIndex = qtyStartIndex + quantitaStr.length;
-
             let remainingStrAfterQty = str.substring(qtyEndIndex).trim();
             let remainingStrBeforeQty = str.substring(0, qtyStartIndex).trim();
 
             for (const u of unitaMisura) {
                 if (!u) continue;
-                const unitRegexAfter = new RegExp(`^${u}(?:\\s|$)`, 'i'); 
+                const unitRegexAfter = new RegExp(`^${u}(?:\\s|$)`, 'i');
                 if (remainingStrAfterQty.toLowerCase().match(unitRegexAfter)) {
                     unita = u;
                     const matchedUnitText = remainingStrAfterQty.match(unitRegexAfter)[0].trim();
@@ -263,7 +308,6 @@
                 const unitRegexBefore = new RegExp(`(?:^|\\s)${u}$`, 'i');
                 if(remainingStrBeforeQty.toLowerCase().match(unitRegexBefore) && !unita) {
                     unita = u;
-                    // const matchedUnitText = remainingStrBeforeQty.match(unitRegexBefore)[0].trim(); // Non usato
                     let tempNameHolder = str.replace(quantitaStr, '').replace(new RegExp(`\\b${u}\\b`, 'i'), '').trim();
                     nome = tempNameHolder.replace(/\s*di\s*/gi, ' ').replace(/^per\s+/i, '').trim();
                     if (!nome) nome = remainingStrAfterQty.trim();
@@ -274,13 +318,11 @@
         } else {
             nome = str;
         }
-        
+
         nome = nome.replace(/^di\s+|^d'\s*|^per\s+/i, '').replace(/\s+di\s+$|\s+d'$/i, '').trim();
         nome = nome.replace(/\s\s+/g, ' ').trim();
-
         if (!nome.trim() && (unita || !isNaN(quantita))) nome = "Ingrediente";
         if (nome.toLowerCase() === quantitaStr.toLowerCase() || nome.toLowerCase() === unita.toLowerCase()) nome = "Ingrediente";
-        
         return { nome: nome || 'Ingrediente sconosciuto', quantita, unita };
     }
 
@@ -300,9 +342,11 @@
             return;
         }
 
+        showLoadingModal(); // Mostra il popup di caricamento
+
         document.getElementById('ingredienti').innerHTML = '';
         const outputTbody = document.querySelector('#outputTable tbody');
-        outputTbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Caricamento ricetta...</td></tr>';
+        outputTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Caricamento ricetta...</td></tr>';
         document.getElementById('originalPortions').value = '';
         document.getElementById('desiredPortions').value = desired;
 
@@ -334,20 +378,17 @@
 
             if (!ricetta || !ricetta.recipeIngredient || ricetta.recipeIngredient.length === 0) {
                 displayError('Nessun dato ricetta strutturato (JSON-LD) trovato o nessun ingrediente. L\'estrazione automatica potrebbe non funzionare.');
-                outputTbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Estrazione automatica fallita. Inserisci manualmente.</td></tr>';
-                // Anche se fallisce l'estrazione, scrolla per vedere il messaggio
-                const outputSection = document.getElementById('output-section');
-                if (outputSection) outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
-                return;
+                outputTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Estrazione automatica fallita. Inserisci manualmente.</td></tr>';
+                return; // Non chiamare ricalcolaDosi e non scrollare ancora
             }
 
             let originalYield = 1;
             if (ricetta.recipeYield) {
                 let yieldValue = Array.isArray(ricetta.recipeYield) ? ricetta.recipeYield[0] : ricetta.recipeYield;
                 if (typeof yieldValue === 'object' && yieldValue !== null && (yieldValue.value || yieldValue.value === 0) ) yieldValue = yieldValue.value;
-                else if (typeof yieldValue === 'string' && yieldValue.includes('-')) { 
+                else if (typeof yieldValue === 'string' && yieldValue.includes('-')) {
                     const matchRange = yieldValue.match(/(\d+)\s*-\s*(\d+)/);
-                    if (matchRange) yieldValue = matchRange[1]; 
+                    if (matchRange) yieldValue = matchRange[1];
                 }
                 const yieldStr = String(yieldValue);
                 const match = yieldStr.match(/\d+/);
@@ -359,13 +400,18 @@
                 const { nome, quantita, unita } = parseIngredienteStringa(ingString);
                 aggiungiIngrediente(nome, isNaN(quantita) ? '' : quantita, unita);
             });
-            ricalcolaDosi(); // This will also handle scrolling and highlighting
+            ricalcolaDosi(); // Chiamato dopo aver aggiunto gli ingredienti
         } catch (e) {
             console.error("Errore caricamento/parsing ricetta:", e);
             displayError(`Errore: ${e.message}. Controlla la console per dettagli.`);
-            outputTbody.innerHTML = `<tr><td colspan="3" class="px-4 py-6 text-center text-red-500">Errore durante il caricamento.</td></tr>`;
-            const outputSection = document.getElementById('output-section');
-            if (outputSection) outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
+            outputTbody.innerHTML = `<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-red-500">Errore durante il caricamento.</td></tr>`;
+        } finally {
+            hideLoadingModal(); // Nasconde il popup di caricamento
+             // Lo scroll e highlight sono gestiti da ricalcolaDosi() o qui se ricalcolaDosi non viene chiamato
+            if (outputTbody.innerHTML.includes("Estrazione automatica fallita") || outputTbody.innerHTML.includes("Errore durante il caricamento")) {
+                const outputSection = document.getElementById('output-section');
+                if (outputSection) outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
+            }
         }
     }
 
@@ -373,7 +419,6 @@
         const container = document.getElementById('ingredienti');
         const div = document.createElement('div');
         div.className = 'ingrediente-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow';
-
         const lowerCaseUnita = String(unita).toLowerCase();
         let selectedUnit = unitaMisura.find(u => u === unita) || unitaMisura.find(u => u.toLowerCase() === lowerCaseUnita) || '';
 
@@ -402,23 +447,19 @@
 
         const fattore = desired / original;
         const tbody = document.querySelector('#outputTable tbody');
-        tbody.innerHTML = ''; 
+        tbody.innerHTML = '';
 
         const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row');
-        // Modifica: Controlla se ci sono ingredienti *o* se un URL è stato appena processato (anche se non ha prodotto ingredienti)
-        // Questo assicura che lo scroll avvenga anche se l'estrazione URL fallisce nel trovare ingredienti ma l'utente si aspetta un risultato/messaggio.
         const urlInputProcessed = document.getElementById('urlInput').value && tbody.innerHTML.includes("Caricamento ricetta...");
 
-
-        if (ingredientRows.length === 0 && !urlInputProcessed) { 
-             tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>';
-             // Non scrollare se non ci sono ingredienti e non si sta processando un URL che non ha ancora terminato
+        if (ingredientRows.length === 0 && !urlInputProcessed) {
+             tbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>';
              return;
         }
-        
+
         let hasValidIngredientsInTable = false;
         ingredientRows.forEach(row => {
-            hasValidIngredientsInTable = true; 
+            hasValidIngredientsInTable = true;
             const nome = (row.querySelector('input[type="text"]').value.trim() || 'Ingrediente non specificato');
             const quantitaOrigStr = row.querySelector('input[type="number"]').value;
             const quantitaOrig = parseFloat(quantitaOrigStr);
@@ -438,7 +479,6 @@
                     if (ricalcolata < 10 && (unita.toLowerCase() === 'g' || unita.toLowerCase() === 'gr' || unita.toLowerCase() === 'ml')) decimals = 1;
                     else if (ricalcolata < 1) decimals = 2;
                     else decimals = (Number.isInteger(ricalcolata)) ? 0 : 1;
-                    
                     quantitaRicalcolataFormatted = parseFloat(ricalcolata.toFixed(decimals));
                 } else {
                     quantitaRicalcolataFormatted = 0;
@@ -448,32 +488,29 @@
 
             const tr = document.createElement('tr');
             tr.className = "hover:bg-orange-50 transition-colors";
+            // Classi per celle dati modificate per migliore wrapping e padding
             tr.innerHTML = `
-                <td class="px-4 py-3 whitespace-normal sm:whitespace-nowrap text-sm text-gray-700">${nome}</td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">${quantitaOriginaleFormatted}</td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium text-right">${quantitaRicalcolataFormatted}</td>
+                <td class="py-3 text-sm text-gray-700">${nome}</td>
+                <td class="py-3 text-sm text-gray-500 text-right original-dose-cell">${quantitaOriginaleFormatted}</td>
+                <td class="py-3 text-sm text-gray-900 font-medium text-right recalculated-dose-cell">${quantitaRicalcolataFormatted}</td>
             `;
             tbody.appendChild(tr);
         });
 
-        if (!hasValidIngredientsInTable && !tbody.innerHTML.includes("Estrazione automatica fallita") && !tbody.innerHTML.includes("Errore durante il caricamento")) { 
-            // Se non ci sono righe valide aggiunte E non c'è già un messaggio di errore specifico da caricaRicettaDaURL
-            tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Nessun ingrediente valido per il ricalcolo.</td></tr>';
+        if (!hasValidIngredientsInTable && !tbody.innerHTML.includes("Estrazione automatica fallita") && !tbody.innerHTML.includes("Errore durante il caricamento")) {
+             tbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente valido per il ricalcolo.</td></tr>';
         }
 
-        // Scroll to results and highlight
         const outputSection = document.getElementById('output-section');
         if (outputSection) {
-            const isMobile = window.innerWidth < 768; 
+            const isMobile = window.innerWidth < 768;
             outputSection.scrollIntoView({ behavior: 'smooth', block: isMobile ? 'start' : 'center' });
-
             outputSection.classList.add('ring-4', 'ring-orange-400', 'ring-offset-2', 'transition-all', 'duration-300', 'ease-in-out');
-            outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)'; 
-
+            outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)';
             setTimeout(() => {
                 outputSection.classList.remove('ring-4', 'ring-orange-400', 'ring-offset-2');
-                outputSection.style.boxShadow = ''; 
-            }, 2500); 
+                outputSection.style.boxShadow = '';
+            }, 2500);
         }
     }
 </script>
