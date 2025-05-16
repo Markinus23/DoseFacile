@@ -112,8 +112,6 @@
                 padding-left: 1rem; /* px-4 */
                 padding-right: 1rem; /* px-4 */
             }
-            /* Ripristina nowrap per le colonne di quantità su schermi più grandi se desiderato, ma di solito non necessario */
-            /* #outputTable .original-dose-cell, #outputTable .recalculated-dose-cell { white-space: nowrap; } */
         }
 
     </style>
@@ -188,6 +186,9 @@
             </button>
             <button onclick="window.print()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out transform hover:scale-105">
                 Stampa Risultato
+            </button>
+            <button onclick="resetRicetta()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out transform hover:scale-105">
+                Reset Ricetta
             </button>
         </div>
     </section>
@@ -342,13 +343,13 @@
             return;
         }
 
-        showLoadingModal(); // Mostra il popup di caricamento
+        showLoadingModal();
 
-        document.getElementById('ingredienti').innerHTML = '';
+        document.getElementById('ingredienti').innerHTML = ''; // Pulisce ingredienti manuali
         const outputTbody = document.querySelector('#outputTable tbody');
         outputTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Caricamento ricetta...</td></tr>';
-        document.getElementById('originalPortions').value = '';
-        document.getElementById('desiredPortions').value = desired;
+        document.getElementById('originalPortions').value = ''; // Pulisce porzioni manuali
+        document.getElementById('desiredPortions').value = desired; // Imposta porzioni desiderate anche nel campo manuale per coerenza
 
         try {
             const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
@@ -379,7 +380,8 @@
             if (!ricetta || !ricetta.recipeIngredient || ricetta.recipeIngredient.length === 0) {
                 displayError('Nessun dato ricetta strutturato (JSON-LD) trovato o nessun ingrediente. L\'estrazione automatica potrebbe non funzionare.');
                 outputTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Estrazione automatica fallita. Inserisci manualmente.</td></tr>';
-                return; // Non chiamare ricalcolaDosi e non scrollare ancora
+                // Non chiamare ricalcolaDosi, ma lo scroll avverrà nel finally
+                return;
             }
 
             let originalYield = 1;
@@ -400,14 +402,14 @@
                 const { nome, quantita, unita } = parseIngredienteStringa(ingString);
                 aggiungiIngrediente(nome, isNaN(quantita) ? '' : quantita, unita);
             });
-            ricalcolaDosi(); // Chiamato dopo aver aggiunto gli ingredienti
+            ricalcolaDosi();
         } catch (e) {
             console.error("Errore caricamento/parsing ricetta:", e);
             displayError(`Errore: ${e.message}. Controlla la console per dettagli.`);
             outputTbody.innerHTML = `<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-red-500">Errore durante il caricamento.</td></tr>`;
         } finally {
-            hideLoadingModal(); // Nasconde il popup di caricamento
-             // Lo scroll e highlight sono gestiti da ricalcolaDosi() o qui se ricalcolaDosi non viene chiamato
+            hideLoadingModal();
+            // Scroll alla sezione output se c'è stato un fallimento gestito o se ricalcolaDosi non è stato chiamato
             if (outputTbody.innerHTML.includes("Estrazione automatica fallita") || outputTbody.innerHTML.includes("Errore durante il caricamento")) {
                 const outputSection = document.getElementById('output-section');
                 if (outputSection) outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
@@ -435,6 +437,8 @@
             </button>
         `;
         container.appendChild(div);
+        // Scroll per vedere l'ingrediente appena aggiunto se la lista è lunga
+        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function ricalcolaDosi() {
@@ -452,7 +456,7 @@
         const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row');
         const urlInputProcessed = document.getElementById('urlInput').value && tbody.innerHTML.includes("Caricamento ricetta...");
 
-        if (ingredientRows.length === 0 && !urlInputProcessed) {
+        if (ingredientRows.length === 0 && !urlInputProcessed) { // Modificato per gestire meglio il messaggio
              tbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>';
              return;
         }
@@ -488,7 +492,6 @@
 
             const tr = document.createElement('tr');
             tr.className = "hover:bg-orange-50 transition-colors";
-            // Classi per celle dati modificate per migliore wrapping e padding
             tr.innerHTML = `
                 <td class="py-3 text-sm text-gray-700">${nome}</td>
                 <td class="py-3 text-sm text-gray-500 text-right original-dose-cell">${quantitaOriginaleFormatted}</td>
@@ -512,6 +515,28 @@
                 outputSection.style.boxShadow = '';
             }, 2500);
         }
+    }
+
+    function resetRicetta() {
+        clearError();
+        // Svuota campi URL
+        document.getElementById('urlInput').value = '';
+        document.getElementById('desiredPortionsURL').value = '';
+
+        // Svuota campi manuali
+        document.getElementById('originalPortions').value = '';
+        document.getElementById('desiredPortions').value = '';
+
+        // Rimuovi ingredienti
+        document.getElementById('ingredienti').innerHTML = '';
+
+        // Resetta tabella output
+        const tbody = document.querySelector('#outputTable tbody');
+        tbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>';
+
+        // Opzionale: scrolla all'inizio della sezione URL o manuale per comodità
+        // document.getElementById('url-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        console.log("Ricetta resettata.");
     }
 </script>
 </body>
