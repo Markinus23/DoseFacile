@@ -124,7 +124,6 @@
         .accordion-content.open {
             max-height: 1000px; /* Un valore sufficientemente grande per contenere il testo */
             padding-top: 0.5rem; /* Tailwind: pt-2 */
-            /* padding-bottom: 0.5rem; Tailwind: pb-2 - Rimosso per evitare doppio padding se il contenuto ha già mb */
             transition: max-height 0.5s ease-in-out, padding-top 0.5s ease-in-out, padding-bottom 0.5s ease-in-out;
         }
         .accordion-button svg {
@@ -157,14 +156,11 @@
         <p class="text-gray-600 mt-3 text-sm sm:text-base">
             Il tuo assistente per ricalcolare le dosi delle ricette in un attimo!
         </p>
-        <div class="mt-4 text-left max-w-2xl mx-auto">
-            <button type="button" class="accordion-button flex justify-between items-center w-full text-left font-semibold text-orange-600 hover:text-orange-700 py-2 focus:outline-none" onclick="toggleAccordion(this, 'descrizione-dosefacile')">
-                <span>Scopri di più su DoseFacile</span>
-                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div id="descrizione-dosefacile" class="accordion-content text-gray-600 text-sm text-justify">
-                Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Incolla l'URL della tua ricetta preferita o inserisci manualmente gli ingredienti, specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette. Ideale per cene in famiglia, feste con amici o semplicemente per non sprecare cibo. Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli.
-            </div>
+        <div class="mt-4 text-left max-w-2xl mx-auto text-gray-600 text-sm pt-2 pb-2">
+            <h3 class="font-semibold text-orange-600 mb-2 text-lg">Scopri di più su DoseFacile</h3>
+            <p class="text-justify">
+            Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Incolla l'URL della tua ricetta preferita o inserisci manualmente gli ingredienti, specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette. Ideale per cene in famiglia, feste con amici o semplicemente per non sprecare cibo. Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli.
+            </p>
         </div>
     </header>
 
@@ -180,7 +176,8 @@
             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <div id="come-funziona-url" class="accordion-content text-gray-600 text-sm text-justify">
-            Con DoseFacile, importare una ricetta è un gioco da ragazzi. Trova la tua ricetta online, copia l'indirizzo web (URL) e incollalo nel campo sottostante. Il nostro sistema intelligente cercherà di estrarre automaticamente gli ingredienti e le porzioni originali. Ricorda che l'estrazione funziona al meglio con siti di ricette popolari e ben strutturati che utilizzano formati standard per i dati delle ricette. Se un sito non è compatibile, puoi sempre inserire la ricetta manualmente.
+             <p class="pt-1"> Con DoseFacile, importare una ricetta è un gioco da ragazzi. Trova la tua ricetta online, copia l'indirizzo web (URL) e incollalo nel campo sottostante. Il nostro sistema intelligente cercherà di estrarre automaticamente gli ingredienti e le porzioni originali. Ricorda che l'estrazione funziona al meglio con siti di ricette popolari e ben strutturati che utilizzano formati standard per i dati delle ricette. Se un sito non è compatibile, puoi sempre inserire la ricetta manualmente.
+            </p>
         </div>
     </div>
 
@@ -208,7 +205,8 @@
             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <div id="controllo-manuale" class="accordion-content text-gray-600 text-sm text-justify">
-            Se hai una ricetta da un libro di cucina, un appunto personale, o se preferisci semplicemente inserire tu stesso ogni dettaglio, questa è la sezione per te. Specifica le porzioni originali della ricetta, aggiungi ogni ingrediente con la sua quantità e unità di misura, e poi dicci per quante persone vuoi ricalcolare le dosi. Questo metodo ti dà la massima precisione e flessibilità.
+            <p class="pt-1"> Se hai una ricetta da un libro di cucina, un appunto personale, o se preferisci semplicemente inserire tu stesso ogni dettaglio, questa è la sezione per te. Specifica le porzioni originali della ricetta, aggiungi ogni ingrediente con la sua quantità e unità di misura, e poi dicci per quante persone vuoi ricalcolare le dosi. Questo metodo ti dà la massima precisione e flessibilità.
+            </p>
         </div>
     </div>
 
@@ -738,7 +736,7 @@
         ingredientiDiv.innerHTML = '';
         outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>';
         
-        // Chiudi tutti gli accordion (anche se ora non sono usati per i testi principali, la funzione è generica)
+        // Chiudi gli accordion attivi (quelli che hanno il bottone con la classe 'open')
         document.querySelectorAll('.accordion-button.open').forEach(button => {
             const contentId = button.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]; 
             if(contentId) { 
