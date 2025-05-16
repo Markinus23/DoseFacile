@@ -99,25 +99,19 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Stili per accordion (testi a scomparsa) */
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
-            padding-top: 0;
-            padding-bottom: 0;
+        /* Stili per la preparazione della ricetta */
+        #recipe-procedure-content ol {
+            list-style-type: decimal;
+            margin-left: 20px; 
         }
-        .accordion-content.open {
-            max-height: 1000px; /* Un valore sufficientemente grande per contenere il testo */
-            padding-top: 0.5rem; /* Tailwind: pt-2 */
-            padding-bottom: 0.5rem; /* Tailwind: pb-2 */
-            transition: max-height 0.5s ease-in-out, padding-top 0.5s ease-in-out, padding-bottom 0.5s ease-in-out;
+        #recipe-procedure-content li {
+            margin-bottom: 0.75em; 
+            line-height: 1.6;
         }
-        .accordion-button svg {
-            transition: transform 0.3s ease;
-        }
-        .accordion-button.open svg {
-            transform: rotate(180deg);
+        #recipe-procedure-content h3, #recipe-procedure-content h4 { 
+            font-weight: 600; 
+            margin-top: 1em;    
+            margin-bottom: 0.5em; 
         }
          /* Assicura che il testo nella tabella possa andare a capo se necessario */
         #outputTable td, #outputTable th {
@@ -143,14 +137,9 @@
         <p class="text-gray-600 mt-3 text-sm sm:text-base">
             Il tuo assistente per ricalcolare le dosi delle ricette in un attimo!
         </p>
-        <div class="mt-4 text-left max-w-2xl mx-auto">
-            <button type="button" class="accordion-button flex justify-between items-center w-full text-left font-semibold text-orange-600 hover:text-orange-700 py-2 focus:outline-none" onclick="toggleAccordion(this, 'descrizione-dosefacile')">
-                <span>Scopri di più su DoseFacile</span>
-                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
-            <div id="descrizione-dosefacile" class="accordion-content text-gray-600 text-sm">
-                Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Incolla l'URL della tua ricetta preferita o inserisci manualmente gli ingredienti, specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette. Ideale per cene in famiglia, feste con amici o semplicemente per non sprecare cibo. Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli.
-            </div>
+        <div class="mt-4 max-w-2xl mx-auto text-gray-600 text-sm pt-2 pb-2 text-justify">
+            <h3 class="font-semibold text-orange-600 mb-1 text-left">Scopri di più su DoseFacile</h3>
+            Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Incolla l'URL della tua ricetta preferita o inserisci manualmente gli ingredienti, specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette. Ideale per cene in famiglia, feste con amici o semplicemente per non sprecare cibo. Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli.
         </div>
     </header>
 
@@ -160,18 +149,16 @@
 
     <div id="error-message" class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300 hidden text-sm"></div>
     
-    <div class="mb-6 px-2">
-        <button type="button" class="accordion-button flex justify-between items-center w-full text-left text-lg font-semibold text-gray-700 hover:text-orange-600 py-2 focus:outline-none" onclick="toggleAccordion(this, 'come-funziona-url')">
-            <span>Come Funziona l'Importazione da URL?</span>
-            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </button>
-        <div id="come-funziona-url" class="accordion-content text-gray-600 text-sm">
+    <div class="mb-6 px-2 text-gray-600 text-sm pt-2 pb-2 text-justify">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2 text-left">Come Funziona l'Importazione da URL?</h3>
+        <p>
             Con DoseFacile, importare una ricetta è un gioco da ragazzi. Trova la tua ricetta online, copia l'indirizzo web (URL) e incollalo nel campo sottostante. Il nostro sistema intelligente cercherà di estrarre automaticamente gli ingredienti e le porzioni originali. Ricorda che l'estrazione funziona al meglio con siti di ricette popolari e ben strutturati che utilizzano formati standard per i dati delle ricette. Se un sito non è compatibile, puoi sempre inserire la ricetta manualmente.
-        </div>
+        </p>
     </div>
 
     <section id="url-section" class="mb-8 p-4 sm:p-6 bg-orange-100 rounded-xl shadow-lg">
-        <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5 sr-only">Parte 1: Carica da URL</h2> <div class="space-y-4">
+        <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5">Parte 1: Carica da URL</h2> 
+        <div class="space-y-4">
             <div>
                 <label for="urlInput" class="block text-sm font-medium text-gray-700 mb-1">URL Ricetta:</label>
                 <input type="url" id="urlInput" placeholder="Incolla qui l'URL della ricetta..." class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-shadow">
@@ -188,18 +175,16 @@
         </div>
     </section>
     
-    <div class="mb-6 px-2">
-        <button type="button" class="accordion-button flex justify-between items-center w-full text-left text-lg font-semibold text-gray-700 hover:text-orange-600 py-2 focus:outline-none" onclick="toggleAccordion(this, 'controllo-manuale')">
-            <span>Preferisci l'inserimento manuale?</span>
-            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </button>
-        <div id="controllo-manuale" class="accordion-content text-gray-600 text-sm">
+    <div class="mb-6 px-2 text-gray-600 text-sm pt-2 pb-2 text-justify">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2 text-left">Preferisci il Controllo Manuale?</h3>
+        <p>
             Se hai una ricetta da un libro di cucina, un appunto personale, o se preferisci semplicemente inserire tu stesso ogni dettaglio, questa è la sezione per te. Specifica le porzioni originali della ricetta, aggiungi ogni ingrediente con la sua quantità e unità di misura, e poi dicci per quante persone vuoi ricalcolare le dosi. Questo metodo ti dà la massima precisione e flessibilità.
-        </div>
+        </p>
     </div>
 
     <section id="manual-section" class="mb-8 p-4 sm:p-6 bg-gray-50 rounded-xl shadow-lg">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-5 sr-only">Parte 2: Inserisci/Modifica Manualmente</h2> <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-5">Parte 2: Inserisci/Modifica Manualmente</h2> 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
             <div>
                 <label for="originalPortions" class="block text-sm font-medium text-gray-700 mb-1">Porzioni Originali:</label>
                 <input type="number" id="originalPortions" placeholder="Es. 2" min="1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-shadow">
@@ -262,15 +247,15 @@
         <div class="space-y-3 text-sm text-gray-600">
             <div>
                 <h4 class="font-semibold text-gray-700">L'estrazione da URL non funziona sempre, perché?</h4>
-                <p>L'estrazione automatica dipende dalla struttura del sito web della ricetta. Siti diversi usano formati diversi, e alcuni potrebbero non essere compatibili. Se l'estrazione fallisce, ti consigliamo di usare la sezione manuale.</p>
+                <p class="text-justify">L'estrazione automatica dipende dalla struttura del sito web della ricetta. Siti diversi usano formati diversi, e alcuni potrebbero non essere compatibili. Se l'estrazione fallisce, ti consigliamo di usare la sezione manuale.</p>
             </div>
             <div>
                 <h4 class="font-semibold text-gray-700">Posso salvare le mie ricette ricalcolate?</h4>
-                <p>Al momento DoseFacile non offre una funzione di salvataggio diretto, ma puoi facilmente usare il pulsante "Stampa Risultato" per salvare la ricetta come PDF o stamparla.</p>
+                <p class="text-justify">Al momento DoseFacile non offre una funzione di salvataggio diretto, ma puoi facilmente usare il pulsante "Stampa Risultato" per salvare la ricetta come PDF o stamparla.</p>
             </div>
             <div>
                 <h4 class="font-semibold text-gray-700">Quali unità di misura sono supportate?</h4>
-                <p>Supportiamo le unità più comuni come grammi (g), chilogrammi (kg), millilitri (ml), litri (l), pezzi (pz), cucchiai, cucchiaini e molte altre. Se manca un'unità, faccelo sapere!</p>
+                <p class="text-justify">Supportiamo le unità più comuni come grammi (g), chilogrammi (kg), millilitri (ml), litri (l), pezzi (pz), cucchiai, cucchiaini e molte altre. Se manca un'unità, faccelo sapere!</p>
             </div>
         </div>
     </section>
@@ -344,7 +329,7 @@
         if (recipeDetailsSection) recipeDetailsSection.classList.add('hidden');
     }
 
-    // Funzione per gestire l'accordion
+    // Funzione per gestire l'accordion (mantenuta per eventuale uso futuro)
     function toggleAccordion(buttonElement, contentId) {
         const contentElement = document.getElementById(contentId);
         if (contentElement) {
@@ -707,8 +692,6 @@
                 setTimeout(() => {
                     if(hasValidIngredientsInTable || (outputTableTbody.innerHTML !== '' && !outputTableTbody.innerHTML.includes("Nessun ingrediente valido"))) {
                        // Non scrollare automaticamente alla sezione dettagli a meno che non sia esplicitamente richiesto
-                       // Lo scroll primario è alla tabella delle dosi.
-                       // recipeDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 }, 400); 
             }
@@ -726,9 +709,9 @@
         ingredientiDiv.innerHTML = '';
         outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>';
         
-        // Chiudi tutti gli accordion
+        // Chiudi tutti gli accordion (anche se ora non sono usati per i testi principali, la funzione è generica)
         document.querySelectorAll('.accordion-button.open').forEach(button => {
-            const contentId = button.getAttribute('onclick').match(/'([^']+)'/)[1];
+            const contentId = button.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]; 
             if(contentId) { 
                 const contentElement = document.getElementById(contentId);
                 if (contentElement && contentElement.classList.contains('open')) {
