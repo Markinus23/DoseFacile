@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy e Cookie Policy - DoseFacile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        (function (w,d) {var loader = function () {var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; s.src="https://cdn.iubenda.com/iubenda.js"; tag.parentNode.insertBefore(s,tag);}; if(w.addEventListener){w.addEventListener("load", loader, false);}else if(w.attachEvent){w.attachEvent("onload", loader);}else{w.onload = loader;}})(window, document);
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
+
+<div class="container mx-auto max-w-4xl bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-xl">
+    <header class="mb-8 pb-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-orange-600">
+                Privacy e Cookie Policy
+            </h1>
+            <a href="index.html" class="text-sm text-orange-600 hover:text-orange-700 hover:underline">
+                &larr; Torna a DoseFacile
+            </a>
+        </div>
+    </header>
+
+    <main class="prose prose-sm sm:prose-base max-w-none text-gray-700">
+        <p class="mb-6">In questa pagina puoi consultare la nostra Privacy Policy e Cookie Policy, e personalizzare le tue preferenze relative al tracciamento e ai cookie.</p>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">Privacy Policy</h2>
+            <p>
+                <a href="https://www.iubenda.com/privacy-policy/75087484" class="iubenda-white iubenda-noiframe iubenda-embed iubenda-noiframe " title="Privacy Policy ">Privacy Policy</a>
+                </p>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">Cookie Policy</h2>
+            <p>
+                <a href="https://www.iubenda.com/privacy-policy/75087484/cookie-policy" class="iubenda-white iubenda-noiframe iubenda-embed iubenda-noiframe " title="Cookie Policy ">Cookie Policy</a>
+                </p>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">Personalizza Consenso Cookie</h2>
+            <p>Utilizza il seguente strumento per personalizzare le tue preferenze sui cookie e sul tracciamento:</p>
+            <script type="text/javascript" src="//embeds.iubenda.com/widgets/fb72df8e-374a-4eed-b5b8-3726a63eca0d.js"></script>
+            </section>
+
+    </main>
+
+    <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
+        <p>&copy; <span id="currentYearPrivacy"></span> Dose Facile.
+            <a href="index.html" class="text-orange-600 hover:underline">Torna alla Home</a>.
+        </p>
+    </footer>
+</div>
+
+<script>
+    // Script semplice per l'anno corrente nel footer di questa pagina
+    document.getElementById('currentYearPrivacy').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
