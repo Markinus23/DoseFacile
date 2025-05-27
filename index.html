@@ -5,141 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dose Facile - Ricalcolatore Ricette Avanzato</title>
 
-    <link rel="icon" href="favicon.ico" sizes="any"> <link rel="apple-touch-icon" href="apple-touch-icon.png"> <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4387635588154619"
      crossorigin="anonymous"></script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GKXC0VWWMP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-GKXC0VWWMP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GKXC0VWWMP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GKXC0VWWMP');
+    </script>
     <style>
-        /* Custom font and minor adjustments */
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        select {
-            background-color: white;
-        }
+        select { background-color: white; }
         .remove-ingredient-btn {
-            background-color: #ef4444; /* red-500 */
-            color: white;
-            border-radius: 9999px; /* pill shape */
-            width: 28px; 
-            height: 28px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem; 
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            background-color: #ef4444; color: white; border-radius: 9999px;
+            width: 28px; height: 28px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
             flex-shrink: 0; 
         }
-        .remove-ingredient-btn:hover {
-            background-color: #dc2626; /* red-600 */
-            transform: scale(1.1);
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-        .highlight-section {
-            transition: box-shadow 0.3s ease-in-out;
-        }
-        .adsense-container {
-            margin-top: 20px;
-            margin-bottom: 20px;
+        .remove-ingredient-btn:hover { background-color: #dc2626; transform: scale(1.1); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .highlight-section { transition: box-shadow 0.3s ease-in-out; }
+        .adsense-container { 
+            margin-top: 20px; 
+            margin-bottom: 20px; 
             text-align: center; 
-            min-height: 50px; 
+            min-height: 50px; /* Mantiene uno spazio minimo anche se vuoto, per layout */
+            /* border: 1px dashed #eee; /* Rimuovi o commenta questo bordo per la produzione */
         }
-        /* Stili per il modale di caricamento */
         .loading-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center;
+            justify-content: center; z-index: 9999; opacity: 0; visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        .loading-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .loading-modal.active { opacity: 1; visibility: visible; }
         .loading-spinner {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #f97316; /* Orange-600 */
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            border: 4px solid #f3f3f3; border-top: 4px solid #f97316;
+            border-radius: 50%; width: 40px; height: 40px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Stili per la preparazione della ricetta */
-        #recipe-procedure-content ol {
-            list-style-type: decimal;
-            margin-left: 20px; 
-        }
-        #recipe-procedure-content li {
-            margin-bottom: 0.75em; 
-            line-height: 1.6;
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #recipe-procedure-content ol { list-style-type: decimal; margin-left: 20px; }
+        #recipe-procedure-content li { margin-bottom: 0.75em; line-height: 1.6; }
         #recipe-procedure-content h3, #recipe-procedure-content h4 { 
-            font-weight: 600; 
-            margin-top: 1em;    
-            margin-bottom: 0.5em; 
+            font-weight: 600; margin-top: 1em; margin-bottom: 0.5em; 
         }
-        /* Stili per accordion (testi a scomparsa) */
         .accordion-content {
-            max-height: 0;
-            overflow: hidden;
+            max-height: 0; overflow: hidden;
             transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
-            padding-top: 0;
-            padding-bottom: 0;
+            padding-top: 0; padding-bottom: 0;
         }
         .accordion-content.open {
-            max-height: 1000px; 
-            padding-top: 0.5rem; 
+            max-height: 1000px; padding-top: 0.5rem; 
             transition: max-height 0.5s ease-in-out, padding-top 0.5s ease-in-out, padding-bottom 0.5s ease-in-out;
         }
-        .accordion-button svg {
-            transition: transform 0.3s ease;
-        }
-        .accordion-button.open svg {
-            transform: rotate(180deg);
-        }
-        #outputTable td, #outputTable th {
-            word-break: break-word; 
-        }
+        .accordion-button svg { transition: transform 0.3s ease; }
+        .accordion-button.open svg { transform: rotate(180deg); }
+        #outputTable td, #outputTable th { word-break: break-word; }
     </style>
 </head>
 <body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
@@ -163,14 +99,31 @@
         <div class="mt-4 text-left max-w-2xl mx-auto text-gray-600 text-sm pt-2 pb-2">
             <h3 class="font-semibold text-orange-600 mb-2 text-lg">Scopri di più su DoseFacile</h3>
             <p class="text-justify">
-            Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Incolla l'URL della tua ricetta preferita o inserisci manualmente gli ingredienti, specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette. Ideale per cene in famiglia, feste con amici o semplicemente per non sprecare cibo. Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli.
+            Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Che tu debba adattare le dosi per una cena intima, per una grande festa con amici, o semplicemente per non sprecare cibo, il nostro strumento è qui per aiutarti. Incolla l'URL della tua ricetta preferita (da blog di cucina, siti specializzati, ecc.) o inserisci manualmente gli ingredienti se hai una ricetta scritta a mano dalla nonna o presa da un libro. Specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette per dolci, salati, e persino bevande! Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli. Provalo ora, è gratis!
             </p>
         </div>
     </header>
 
+    <section class="my-8 px-2 text-gray-600 text-sm">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">Perché Ricalcolare le Dosi di una Ricetta?</h2>
+        <div class="space-y-3 text-justify">
+            <p>
+                Ricalcolare le dosi di una ricetta è un'esigenza comune per chiunque ami cucinare. Che tu sia un cuoco esperto o alle prime armi, ti sarai sicuramente trovato di fronte a una ricetta pensata per un numero di persone diverso da quello che ti serve. DoseFacile nasce proprio per risolvere questo problema, offrendo una soluzione semplice e immediata.
+            </p>
+            <p>
+                Uno dei motivi principali è la necessità di **adattare la ricetta al numero di commensali**. Magari hai trovato la ricetta perfetta per una torta da 8 persone, ma vuoi prepararla solo per te e la tua dolce metà, oppure devi organizzare una cena per 12 amici. Ricalcolare le dosi ti permette di non sbagliare le proporzioni, garantendo la riuscita del piatto.
+            </p>
+            <p>
+                Un altro vantaggio fondamentale è la **riduzione degli sprechi alimentari**. Cucinare la giusta quantità di cibo significa evitare avanzi che potrebbero andare persi. Adattando le dosi, utilizzi solo gli ingredienti necessari, risparmiando denaro e contribuendo a un consumo più consapevole. Inoltre, se vuoi **provare una nuova ricetta** per la prima volta, potresti voler iniziare con una dose ridotta per testare il risultato senza impegnare troppi ingredienti.
+            </p>
+             <p>
+                Infine, spesso ci si trova a dover adattare ricette per **teglie o stampi di dimensioni diverse** da quelle indicate. Anche se DoseFacile si concentra sul numero di porzioni, capire come scalare gli ingredienti è un concetto simile e fondamentale per la buona riuscita, specialmente in pasticceria dove la precisione è tutto.
+            </p>
+        </div>
+    </section>
+
     <div class="adsense-container my-6">
-        <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Sotto Header]</p> 
-    </div>
+        </div>
 
     <div id="error-message" class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300 hidden text-sm"></div>
     
@@ -180,7 +133,7 @@
             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <div id="come-funziona-url" class="accordion-content text-gray-600 text-sm text-justify">
-             <p class="pt-1"> Con DoseFacile, importare una ricetta è un gioco da ragazzi. Trova la tua ricetta online, copia l'indirizzo web (URL) e incollalo nel campo sottostante. Il nostro sistema intelligente cercherà di estrarre automaticamente gli ingredienti e le porzioni originali. Ricorda che l'estrazione funziona al meglio con siti di ricette popolari e ben strutturati che utilizzano formati standard per i dati delle ricette. Se un sito non è compatibile, puoi sempre inserire la ricetta manualmente.
+             <p class="pt-1"> Con DoseFacile, importare una ricetta è un gioco da ragazzi. Trova la tua ricetta online (da blog di cucina, siti specializzati, ecc.), copia l'indirizzo web (URL) e incollalo nel campo apposito. Il nostro sistema intelligente cercherà di estrarre automaticamente gli ingredienti e le porzioni originali. Ricorda che l'estrazione funziona al meglio con siti di ricette popolari e ben strutturati che utilizzano formati standard (come JSON-LD) per i dati delle ricette. Se un sito non è compatibile o se l'estrazione non è perfetta, puoi sempre affinare i risultati o inserire la ricetta completamente in modo manuale.
             </p>
         </div>
     </div>
@@ -209,7 +162,7 @@
             <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <div id="controllo-manuale" class="accordion-content text-gray-600 text-sm text-justify">
-            <p class="pt-1"> Se hai una ricetta da un libro di cucina, un appunto personale, o se preferisci semplicemente inserire tu stesso ogni dettaglio, questa è la sezione per te. Specifica le porzioni originali della ricetta, aggiungi ogni ingrediente con la sua quantità e unità di misura, e poi dicci per quante persone vuoi ricalcolare le dosi. Questo metodo ti dà la massima precisione e flessibilità.
+            <p class="pt-1"> Se hai una ricetta da un libro di cucina, un appunto scritto a mano dalla nonna, o se semplicemente preferisci inserire tu stesso ogni dettaglio per la massima precisione, questa è la sezione per te. Specifica le porzioni originali indicate nella tua ricetta, aggiungi ogni ingrediente con la sua quantità e l'unità di misura corretta, e poi dicci per quante persone vuoi effettivamente cucinare. Questo metodo ti dà il pieno controllo sul ricalcolo ed è perfetto per quelle ricette preziose non disponibili online.
             </p>
         </div>
     </div>
@@ -244,6 +197,28 @@
             </button>
         </div>
     </section>
+
+    <section class="my-8 px-2 text-gray-600 text-sm">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">Consigli per Usare al Meglio DoseFacile</h2>
+        <div class="space-y-3 text-justify">
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Doppio controllo delle unità:</strong> Assicurati sempre che le unità di misura inserite (grammi, millilitri, cucchiai, ecc.) siano corrette e coerenti con la ricetta originale. Un piccolo errore qui può fare una grande differenza nel risultato finale!</li>
+                <li><strong>Ingredienti "critici":</strong> Per ingredienti come uova, lievito o spezie molto potenti, un ricalcolo puramente matematico potrebbe non essere sempre perfetto. Ad esempio, se il calcolo suggerisce "1.5 uova", dovrai decidere se arrotondare a 1 o 2, o magari usare un uovo più piccolo o più grande. Affidati anche alla tua esperienza in cucina!</li>
+                <li><strong>Salva e Stampa:</strong> Una volta ottenute le dosi ricalcolate, usa la funzione "Stampa Risultato" per salvare la tua ricetta come PDF o per stamparla. Così l'avrai sempre a portata di mano quando ti metterai ai fornelli.</li>
+                <li><strong>Sperimenta con fiducia:</strong> DoseFacile è qui per toglierti il peso dei calcoli e permetterti di sperimentare di più in cucina. Non aver paura di provare ad adattare le tue ricette preferite!</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="my-8 px-2 text-gray-600 text-sm">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">L'Importanza delle Dosi Corrette in Cucina</h2>
+        <div class="space-y-3 text-justify">
+            <p>
+                Soprattutto in pasticceria, ma anche in molte preparazioni salate, la precisione delle dosi è fondamentale per la riuscita del piatto. Un equilibrio errato tra farina e liquidi, o una quantità sbagliata di agente lievitante, può compromettere la consistenza, il sapore e l'aspetto della tua creazione. DoseFacile ti aiuta a mantenere questo delicato equilibrio anche quando cambi il numero di porzioni, assicurandoti risultati sempre all'altezza delle tue aspettative.
+            </p>
+        </div>
+    </section>
+
 
     <section id="output-section" class="p-4 sm:p-6 bg-white rounded-xl shadow-lg border border-gray-200 highlight-section">
         <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5">Risultato Ricalcolato (Dosi)</h2>
@@ -291,12 +266,21 @@
         </div>
     </section>
 
+    <section class="my-8 px-2 text-gray-600 text-sm">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">La Nostra Missione (DoseFacile)</h2>
+        <div class="space-y-3 text-justify">
+            <p>
+                DoseFacile nasce dalla passione per la cucina e dalla frustrazione di dover continuamente ricalcolare le dosi delle ricette. La nostra missione è semplice: fornire uno strumento gratuito, intuitivo e affidabile che renda la vita più facile a tutti gli appassionati di cucina, dai principianti ai più esperti. Vogliamo che tu possa concentrarti sulla gioia di preparare piatti deliziosi, lasciando a noi il compito noioso ma fondamentale di adattare le quantità. Crediamo in una cucina accessibile, senza sprechi e piena di soddisfazioni!
+            </p>
+        </div>
+    </section>
+
+
     <div class="adsense-container mt-10">
-         <p class="text-gray-400 text-xs">[Spazio Annuncio Pubblicitario Footer]</p> 
-    </div>
+        </div>
 
     <footer class="mt-12 text-center text-sm text-gray-500">
-        <p>&copy; <span id="currentYear"></span> Dose Facile.it 
+        <p>&copy; <span id="currentYear"></span> Dose Facile. Tutti i diritti riservati. 
             <a href="privacy-policy.html" class="text-orange-600 hover:underline">Privacy Policy</a>
             </p>
     </footer>
@@ -759,3 +743,5 @@
 </body>
 </html>
 ```
+
+Spero che questa versione sia quella definitiva e funzioni perfettamente per 
