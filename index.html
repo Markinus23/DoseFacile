@@ -5,80 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dose Facile - Ricalcolatore Ricette Avanzato</title>
 
+    <!-- FAVICON -->
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
+    <!-- SCRIPT -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4387635588154619"
-     crossorigin="anonymous"></script>
+    <!-- Script Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GKXC0VWWMP"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // Imposta lo stato di consenso predefinito per Google Consent Mode v2
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
       gtag('js', new Date());
       gtag('config', 'G-GKXC0VWWMP');
     </script>
     <style>
-        body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
         select { background-color: white; }
-        .remove-ingredient-btn {
-            background-color: #ef4444; color: white; border-radius: 9999px;
-            width: 28px; height: 28px; display: flex; align-items: center;
-            justify-content: center; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-            flex-shrink: 0; 
-        }
+        .remove-ingredient-btn { background-color: #ef4444; color: white; border-radius: 9999px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; flex-shrink: 0; }
         .remove-ingredient-btn:hover { background-color: #dc2626; transform: scale(1.1); }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .highlight-section { transition: box-shadow 0.3s ease-in-out; }
-        .adsense-container { 
-            margin-top: 20px; 
-            margin-bottom: 20px; 
-            text-align: center; 
-            min-height: 50px; /* Mantiene uno spazio minimo anche se vuoto, per layout */
-            /* border: 1px dashed #eee; /* Rimuovi o commenta questo bordo per la produzione */
-        }
-        .loading-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center;
-            justify-content: center; z-index: 9999; opacity: 0; visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
+        .loading-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
         .loading-modal.active { opacity: 1; visibility: visible; }
-        .loading-spinner {
-            border: 4px solid #f3f3f3; border-top: 4px solid #f97316;
-            border-radius: 50%; width: 40px; height: 40px;
-            animation: spin 1s linear infinite;
-        }
+        .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #f97316; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #recipe-procedure-content ol { list-style-type: decimal; margin-left: 20px; }
         #recipe-procedure-content li { margin-bottom: 0.75em; line-height: 1.6; }
-        #recipe-procedure-content h3, #recipe-procedure-content h4 { 
-            font-weight: 600; margin-top: 1em; margin-bottom: 0.5em; 
-        }
-        .accordion-content {
-            max-height: 0; overflow: hidden;
-            transition: max-height 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
-            padding-top: 0; padding-bottom: 0;
-        }
-        .accordion-content.open {
-            max-height: 1000px; padding-top: 0.5rem; 
-            transition: max-height 0.5s ease-in-out, padding-top 0.5s ease-in-out, padding-bottom 0.5s ease-in-out;
-        }
-        .accordion-button svg { transition: transform 0.3s ease; }
-        .accordion-button.open svg { transform: rotate(180deg); }
+        #recipe-procedure-content h3, #recipe-procedure-content h4 { font-weight: 600; margin-top: 1em; margin-bottom: 0.5em; }
         #outputTable td, #outputTable th { word-break: break-word; }
     </style>
 </head>
-<body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
+<body class="bg-gray-100 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
 
 <div id="loadingModal" class="loading-modal">
     <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
@@ -89,57 +53,20 @@
 </div>
 
 <div class="container mx-auto max-w-4xl bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-2xl">
-    <header class="mb-8 text-center">
+    <header class="mb-6 text-center">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-orange-600">
             <span class="inline-block align-middle">🍳</span> DoseFacile
         </h1>
-        <p class="text-gray-600 mt-3 text-sm sm:text-base">
-            Il tuo assistente per ricalcolare le dosi delle ricette in un attimo!
+        <p class="text-gray-600 mt-6 text-sm sm:text-base max-w-2xl mx-auto">
+            Il tuo assistente per ricalcolare le dosi delle ricette in un attimo! Incolla un URL o inserisci gli ingredienti manualmente e adatta qualsiasi ricetta al numero di persone che desideri. Semplice, veloce e senza stress.
         </p>
-        <div class="mt-4 text-left max-w-2xl mx-auto text-gray-600 text-sm pt-2 pb-2">
-            <h3 class="font-semibold text-orange-600 mb-2 text-lg">Scopri di più su DoseFacile</h3>
-            <p class="text-justify">
-            Quante volte ti sei trovato con una ricetta perfetta per un numero diverso di persone? DoseFacile risolve questo problema in pochi secondi! Che tu debba adattare le dosi per una cena intima, per una grande festa con amici, o semplicemente per non sprecare cibo, il nostro strumento è qui per aiutarti. Incolla l'URL della tua ricetta preferita (da blog di cucina, siti specializzati, ecc.) o inserisci manualmente gli ingredienti se hai una ricetta scritta a mano dalla nonna o presa da un libro. Specifica per quante persone vuoi cucinare, e ottieni subito le dosi corrette per dolci, salati, e persino bevande! Il nostro strumento è pensato per essere intuitivo e veloce, aiutandoti a concentrarti sulla preparazione dei tuoi piatti preferiti senza lo stress dei calcoli. Provalo ora, è gratis!
-            </p>
-        </div>
     </header>
 
-    <section class="my-8 px-2 text-gray-600 text-sm">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">Perché Ricalcolare le Dosi di una Ricetta?</h2>
-        <div class="space-y-3 text-justify">
-            <p>
-                Ricalcolare le dosi di una ricetta è un'esigenza comune per chiunque ami cucinare. Che tu sia un cuoco esperto o alle prime armi, ti sarai sicuramente trovato di fronte a una ricetta pensata per un numero di persone diverso da quello che ti serve. DoseFacile nasce proprio per risolvere questo problema, offrendo una soluzione semplice e immediata.
-            </p>
-            <p>
-                Uno dei motivi principali è la necessità di **adattare la ricetta al numero di commensali**. Magari hai trovato la ricetta perfetta per una torta da 8 persone, ma vuoi prepararla solo per te e la tua dolce metà, oppure devi organizzare una cena per 12 amici. Ricalcolare le dosi ti permette di non sbagliare le proporzioni, garantendo la riuscita del piatto.
-            </p>
-            <p>
-                Un altro vantaggio fondamentale è la **riduzione degli sprechi alimentari**. Cucinare la giusta quantità di cibo significa evitare avanzi che potrebbero andare persi. Adattando le dosi, utilizzi solo gli ingredienti necessari, risparmiando denaro e contribuendo a un consumo più consapevole. Inoltre, se vuoi **provare una nuova ricetta** per la prima volta, potresti voler iniziare con una dose ridotta per testare il risultato senza impegnare troppi ingredienti.
-            </p>
-             <p>
-                Infine, spesso ci si trova a dover adattare ricette per **teglie o stampi di dimensioni diverse** da quelle indicate. Anche se DoseFacile si concentra sul numero di porzioni, capire come scalare gli ingredienti è un concetto simile e fondamentale per la buona riuscita, specialmente in pasticceria dove la precisione è tutto.
-            </p>
-        </div>
-    </section>
-
-    <div class="adsense-container my-6">
-        </div>
-
     <div id="error-message" class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300 hidden text-sm"></div>
-    
-    <div class="mb-6 px-2">
-        <button type="button" class="accordion-button flex justify-between items-center w-full text-left text-lg font-semibold text-gray-700 hover:text-orange-600 py-2 focus:outline-none" onclick="toggleAccordion(this, 'come-funziona-url')">
-            <span>Come Funziona l'Importazione da URL?</span>
-            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </button>
-        <div id="come-funziona-url" class="accordion-content text-gray-600 text-sm text-justify">
-             <p class="pt-1"> Con DoseFacile, importare una ricetta è un gioco da ragazzi. Trova la tua ricetta online (da blog di cucina, siti specializzati, ecc.), copia l'indirizzo web (URL) e incollalo nel campo apposito. Il nostro sistema intelligente cercherà di estrarre automaticamente gli ingredienti e le porzioni originali. Ricorda che l'estrazione funziona al meglio con siti di ricette popolari e ben strutturati che utilizzano formati standard (come JSON-LD) per i dati delle ricette. Se un sito non è compatibile o se l'estrazione non è perfetta, puoi sempre affinare i risultati o inserire la ricetta completamente in modo manuale.
-            </p>
-        </div>
-    </div>
 
     <section id="url-section" class="mb-8 p-4 sm:p-6 bg-orange-100 rounded-xl shadow-lg">
-        <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5 sr-only">Parte 1: Carica da URL</h2> <div class="space-y-4">
+        <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5">Parte 1: Carica da URL</h2>
+        <div class="space-y-4">
             <div>
                 <label for="urlInput" class="block text-sm font-medium text-gray-700 mb-1">URL Ricetta:</label>
                 <input type="url" id="urlInput" placeholder="Incolla qui l'URL della ricetta..." class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-shadow">
@@ -155,20 +82,10 @@
             </div>
         </div>
     </section>
-    
-    <div class="mb-6 px-2">
-        <button type="button" class="accordion-button flex justify-between items-center w-full text-left text-lg font-semibold text-gray-700 hover:text-orange-600 py-2 focus:outline-none" onclick="toggleAccordion(this, 'controllo-manuale')">
-            <span>Preferisci il Controllo Manuale?</span>
-            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </button>
-        <div id="controllo-manuale" class="accordion-content text-gray-600 text-sm text-justify">
-            <p class="pt-1"> Se hai una ricetta da un libro di cucina, un appunto scritto a mano dalla nonna, o se semplicemente preferisci inserire tu stesso ogni dettaglio per la massima precisione, questa è la sezione per te. Specifica le porzioni originali indicate nella tua ricetta, aggiungi ogni ingrediente con la sua quantità e l'unità di misura corretta, e poi dicci per quante persone vuoi effettivamente cucinare. Questo metodo ti dà il pieno controllo sul ricalcolo ed è perfetto per quelle ricette preziose non disponibili online.
-            </p>
-        </div>
-    </div>
 
     <section id="manual-section" class="mb-8 p-4 sm:p-6 bg-gray-50 rounded-xl shadow-lg">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-5 sr-only">Parte 2: Inserisci/Modifica Manualmente</h2> <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-5">Parte 2: Inserisci/Modifica Manualmente</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6">
             <div>
                 <label for="originalPortions" class="block text-sm font-medium text-gray-700 mb-1">Porzioni Originali:</label>
                 <input type="number" id="originalPortions" placeholder="Es. 2" min="1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-shadow">
@@ -178,47 +95,15 @@
                 <input type="number" id="desiredPortions" placeholder="Es. 4" min="1" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-shadow">
             </div>
         </div>
-
         <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Ingredienti</h3>
-        <div id="ingredienti" class="space-y-4 mb-6">
-            </div>
+        <div id="ingredienti" class="space-y-4 mb-6"></div>
         <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3">
-            <button onclick="aggiungiIngrediente()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out transform hover:scale-105">
-                Aggiungi Ingrediente
-            </button>
-            <button onclick="ricalcolaDosi()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out transform hover:scale-105">
-                Ricalcola Dosi
-            </button>
-            <button onclick="window.print()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out transform hover:scale-105">
-                Stampa Risultato
-            </button>
-            <button onclick="resetRicetta()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out transform hover:scale-105">
-                Reset Ricetta
-            </button>
+            <button onclick="aggiungiIngrediente()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">Aggiungi Ingrediente</button>
+            <button onclick="ricalcolaDosi()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">Ricalcola Dosi</button>
+            <button onclick="window.print()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">Stampa Risultato</button>
+            <button onclick="resetRicetta()" class="w-full sm:w-auto flex-grow sm:flex-grow-0 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">Reset Ricetta</button>
         </div>
     </section>
-
-    <section class="my-8 px-2 text-gray-600 text-sm">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">Consigli per Usare al Meglio DoseFacile</h2>
-        <div class="space-y-3 text-justify">
-            <ul class="list-disc list-inside space-y-2">
-                <li><strong>Doppio controllo delle unità:</strong> Assicurati sempre che le unità di misura inserite (grammi, millilitri, cucchiai, ecc.) siano corrette e coerenti con la ricetta originale. Un piccolo errore qui può fare una grande differenza nel risultato finale!</li>
-                <li><strong>Ingredienti "critici":</strong> Per ingredienti come uova, lievito o spezie molto potenti, un ricalcolo puramente matematico potrebbe non essere sempre perfetto. Ad esempio, se il calcolo suggerisce "1.5 uova", dovrai decidere se arrotondare a 1 o 2, o magari usare un uovo più piccolo o più grande. Affidati anche alla tua esperienza in cucina!</li>
-                <li><strong>Salva e Stampa:</strong> Una volta ottenute le dosi ricalcolate, usa la funzione "Stampa Risultato" per salvare la tua ricetta come PDF o per stamparla. Così l'avrai sempre a portata di mano quando ti metterai ai fornelli.</li>
-                <li><strong>Sperimenta con fiducia:</strong> DoseFacile è qui per toglierti il peso dei calcoli e permetterti di sperimentare di più in cucina. Non aver paura di provare ad adattare le tue ricette preferite!</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="my-8 px-2 text-gray-600 text-sm">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">L'Importanza delle Dosi Corrette in Cucina</h2>
-        <div class="space-y-3 text-justify">
-            <p>
-                Soprattutto in pasticceria, ma anche in molte preparazioni salate, la precisione delle dosi è fondamentale per la riuscita del piatto. Un equilibrio errato tra farina e liquidi, o una quantità sbagliata di agente lievitante, può compromettere la consistenza, il sapore e l'aspetto della tua creazione. DoseFacile ti aiuta a mantenere questo delicato equilibrio anche quando cambi il numero di porzioni, assicurandoti risultati sempre all'altezza delle tue aspettative.
-            </p>
-        </div>
-    </section>
-
 
     <section id="output-section" class="p-4 sm:p-6 bg-white rounded-xl shadow-lg border border-gray-200 highlight-section">
         <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5">Risultato Ricalcolato (Dosi)</h2>
@@ -232,7 +117,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                     <tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>
+                     <tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">I risultati appariranno qui...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -240,57 +125,65 @@
 
     <section id="recipe-details-section" class="mt-8 p-4 sm:p-6 bg-orange-50 rounded-xl shadow-lg border border-orange-200 hidden">
         <h2 class="text-xl sm:text-2xl font-semibold text-orange-700 mb-5">Preparazione Ricetta Originale</h2>
-        <div id="recipe-procedure-content" class="prose prose-sm sm:prose-base max-w-none text-gray-700 prose-ol:ml-5 prose-li:mb-3 prose-li:leading-relaxed prose-h3:font-semibold prose-h3:mt-4 prose-h3:mb-2 prose-h4:font-semibold prose-h4:mt-4 prose-h4:mb-2">
-            <p class="italic">Istruzioni della ricetta appariranno qui dopo aver caricato un URL valido.</p>
-        </div>
-        <div id="recipe-source-content" class="mt-6 text-xs sm:text-sm text-gray-600">
-            <p class="italic">Fonte della ricetta apparirà qui.</p>
-        </div>
+        <div id="recipe-procedure-content" class="prose prose-sm sm:prose-base max-w-none text-gray-700"></div>
+        <div id="recipe-source-content" class="mt-6 text-xs sm:text-sm text-gray-600"></div>
     </section>
     
+    <section id="affiliate-section" class="my-10 p-4 sm:p-6 bg-green-50 rounded-xl shadow-lg border border-green-200">
+        <h2 class="text-xl sm:text-2xl font-semibold text-green-800 mb-4 text-center">Strumenti Utili Consigliati</h2>
+        <p class="text-center text-gray-600 text-sm mb-6">Per ricette perfette, la precisione è tutto! Ecco alcuni strumenti che consiglio per non sbagliare mai una dose.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center">
+                <img src="https://m.media-amazon.com/images/I/815FWesbK3L._AC_SL1500_.jpg" alt="Bilancia da cucina digitale" class="w-32 h-32 object-contain rounded-md mb-4 bg-white">
+                <h4 class="font-bold text-gray-800">Bilancia Digitale di Precisione</h4>
+                <p class="text-xs text-gray-500 mt-1 mb-3">Indispensabile per pesare con esattezza solidi e liquidi, soprattutto in pasticceria.</p>
+                <a href="https://amzn.to/3HH6rqd" target="_blank" rel="noopener noreferrer nofollow" class="mt-auto w-full inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition">Vedi su Amazon</a>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center">
+                <img src="https://m.media-amazon.com/images/I/71nftfTv1GL._AC_SL1500_.jpg" alt="Frullatore a immersione" class="w-32 h-32 object-contain rounded-md mb-4 bg-white">
+                <h4 class="font-bold text-gray-800">Frullatore a Immersione</h4>
+                <p class="text-xs text-gray-500 mt-1 mb-3">Un alleato versatile per zuppe, salse e frullati. Veloce e facile da pulire.</p>
+                <a href="https://amzn.to/4l3J9t6" target="_blank" rel="noopener noreferrer nofollow" class="mt-auto w-full inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition">Vedi su Amazon</a>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center">
+                <img src="https://m.media-amazon.com/images/I/61mweebqBnL.__AC_SX300_SY300_QL70_ML2_.jpg" alt="Timer da cucina" class="w-32 h-32 object-contain rounded-md mb-4 bg-white">
+                <h4 class="font-bold text-gray-800">Timer da Cucina Magnetico</h4>
+                <p class="text-xs text-gray-500 mt-1 mb-3">Per non perdere mai di vista i tempi di cottura e ottenere risultati sempre perfetti.</p>
+                <a href="https://amzn.to/3HH6wu1" target="_blank" rel="noopener noreferrer nofollow" class="mt-auto w-full inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition">Vedi su Amazon</a>
+            </div>
+        </div>
+        <p class="text-center text-xs text-gray-400 mt-4">In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+    </section>
+    
+    <section id="donation-section" class="my-10 p-4 sm:p-6 bg-blue-50 rounded-xl shadow-lg border border-blue-200 text-center">
+         <h2 class="text-xl sm:text-2xl font-semibold text-blue-800 mb-2">Ti piace DoseFacile?</h2>
+         <p class="text-gray-600 text-sm mb-4">Se questo strumento ti è stato utile, considera di supportare il progetto con una piccola donazione. Mi aiuterà a mantenerlo gratuito e a migliorarlo ancora!</p>
+         <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="dosefacile.it" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+    </section>
+
     <section class="my-8 p-4 sm:p-6 bg-gray-50 rounded-xl shadow-lg">
         <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4">Domande Frequenti (FAQ)</h2>
-        <div class="space-y-3 text-sm text-gray-600">
+        <div class="space-y-4 text-sm text-gray-600">
             <div>
-                <h4 class="font-semibold text-gray-700">L'estrazione da URL non funziona sempre, perché?</h4>
-                <p class="text-justify">L'estrazione automatica dipende dalla struttura del sito web della ricetta. Siti diversi usano formati diversi, e alcuni potrebbero non essere compatibili. Se l'estrazione fallisce, ti consigliamo di usare la sezione manuale.</p>
+                <h4 class="font-semibold text-gray-700">Perché l'importazione da URL a volte non funziona?</h4>
+                <p class="text-justify">L'estrazione dipende dalla struttura del sito di origine. Se non è standard, il nostro sistema potrebbe non riconoscere gli ingredienti. In quel caso, l'inserimento manuale è la soluzione perfetta!</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-700">Posso salvare le mie ricette ricalcolate?</h4>
-                <p class="text-justify">Al momento DoseFacile non offre una funzione di salvataggio diretto, ma puoi facilmente usare il pulsante "Stampa Risultato" per salvare la ricetta come PDF o stamparla.</p>
-            </div>
-            <div>
-                <h4 class="font-semibold text-gray-700">Quali unità di misura sono supportate?</h4>
-                <p class="text-justify">Supportiamo le unità più comuni come grammi (g), chilogrammi (kg), millilitri (ml), litri (l), pezzi (pz), cucchiai, cucchiaini e molte altre. Se manca un'unità, faccelo sapere!</p>
+                <h4 class="font-semibold text-gray-700">Posso salvare la mia ricetta ricalcolata?</h4>
+                <p class="text-justify">Al momento non c'è una funzione di salvataggio diretto, ma puoi usare il pulsante "Stampa Risultato" per salvare la ricetta come PDF sul tuo dispositivo o stamparla.</p>
             </div>
         </div>
     </section>
-
-    <section class="my-8 px-2 text-gray-600 text-sm">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 text-left">La Nostra Missione (DoseFacile)</h2>
-        <div class="space-y-3 text-justify">
-            <p>
-                DoseFacile nasce dalla passione per la cucina e dalla frustrazione di dover continuamente ricalcolare le dosi delle ricette. La nostra missione è semplice: fornire uno strumento gratuito, intuitivo e affidabile che renda la vita più facile a tutti gli appassionati di cucina, dai principianti ai più esperti. Vogliamo che tu possa concentrarti sulla gioia di preparare piatti deliziosi, lasciando a noi il compito noioso ma fondamentale di adattare le quantità. Crediamo in una cucina accessibile, senza sprechi e piena di soddisfazioni!
-            </p>
-        </div>
-    </section>
-
-
-    <div class="adsense-container mt-10">
-        </div>
 
     <footer class="mt-12 text-center text-sm text-gray-500">
         <p>&copy; <span id="currentYear"></span> Dose Facile. Tutti i diritti riservati. 
             <a href="privacy-policy.html" class="text-orange-600 hover:underline">Privacy Policy</a>
-            </p>
+        </p>
     </footer>
 </div>
 
 <script>
-    // Imposta l'anno corrente nel footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
-    
-    // Elementi DOM
     const loadingModal = document.getElementById('loadingModal');
     const errorDiv = document.getElementById('error-message');
     const recipeDetailsSection = document.getElementById('recipe-details-section');
@@ -302,443 +195,26 @@
     const desiredPortionsEl = document.getElementById('desiredPortions');
     const ingredientiDiv = document.getElementById('ingredienti');
     const outputTableTbody = document.querySelector('#outputTable tbody');
-
-    // Global variables to store recipe details from URL
     let currentRecipeInstructions = null;
     let currentRecipeSourceUrl = null;
-
-    const unitaMisura = [
-        'cucchiaino da caffè', 'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai',
-        'bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette',
-        'spicchio', 'spicchi', 'scatola', 'scatolette', 'bustina', 'bustine',
-        'confezione', 'confezioni', 'pizzico', 'pizzichi', 'foglia', 'foglie',
-        'gambo', 'gambi', 'rametto', 'rametti', 'barattolo', 'vasetto', 'uovo', 'uova',
-        'ml', 'cl', 'dl', 'l', 'gr', 'g', 'hg', 'kg', 'pz', 'numero', 'q.b.', ''
-    ].sort((a, b) => b.length - a.length);
-
+    const unitaMisura = ['cucchiaino da caffè', 'cucchiaino', 'cucchiaini', 'cucchiaio', 'cucchiai','bicchiere', 'bicchieri', 'tazza', 'tazze', 'fetta', 'fette','spicchio', 'spicchi', 'scatola', 'scatolette', 'bustina', 'bustine','confezione', 'confezioni', 'pizzico', 'pizzichi', 'foglia', 'foglie','gambo', 'gambi', 'rametto', 'rametti', 'barattolo', 'vasetto', 'uovo', 'uova','ml', 'cl', 'dl', 'l', 'gr', 'g', 'hg', 'kg', 'pz', 'numero', 'q.b.', ''].sort((a, b) => b.length - a.length);
     const unitaIntere = ['pz', 'numero', 'fetta', 'fette', 'spicchio', 'spicchi', 'scatola', 'scatolette', 'bustina', 'bustine', 'confezione', 'confezioni', 'foglia', 'foglie', 'gambo', 'gambi', 'rametto', 'rametti', 'barattolo', 'vasetto', 'uovo', 'uova'];
-
-    function showLoadingModal() {
-        if (loadingModal) loadingModal.classList.add('active');
-    }
-    function hideLoadingModal() {
-        if (loadingModal) loadingModal.classList.remove('active');
-    }
-
-    function displayError(message) {
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('hidden');
-        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function clearError() {
-        errorDiv.textContent = '';
-        errorDiv.classList.add('hidden');
-    }
-    
-    function clearRecipeDetails() {
-        currentRecipeInstructions = null;
-        currentRecipeSourceUrl = null;
-        if (recipeProcedureContent) recipeProcedureContent.innerHTML = '<p class="italic">Istruzioni della ricetta appariranno qui dopo aver caricato un URL valido.</p>';
-        if (recipeSourceContent) recipeSourceContent.innerHTML = '<p class="italic">Fonte della ricetta apparirà qui.</p>';
-        if (recipeDetailsSection) recipeDetailsSection.classList.add('hidden');
-    }
-
-    // Funzione per gestire l'accordion
-    function toggleAccordion(buttonElement, contentId) {
-        const contentElement = document.getElementById(contentId);
-        if (contentElement) {
-            const isOpen = contentElement.classList.contains('open');
-            if (isOpen) {
-                contentElement.classList.remove('open');
-                buttonElement.classList.remove('open');
-            } else {
-                contentElement.classList.add('open');
-                buttonElement.classList.add('open');
-            }
-        }
-    }
-
-
-    function parseQuantity(qtyStr) {
-        if (!qtyStr) return NaN;
-        let s = String(qtyStr).trim().toLowerCase().replace(',', '.');
-        if (s === 'q.b.' || s === 'quanto basta' || s === 'un pizzico' || s === 'pizzico') return NaN;
-        const fractionSymbols = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1/3, '⅔': 2/3, '⅕': 0.2, '⅖': 0.4, '⅗': 0.6, '⅘': 0.8 };
-        if (fractionSymbols[s]) return fractionSymbols[s];
-        const rangeMatch = s.match(/^(\d+)\s*-\s*\d+/);
-        if (rangeMatch) s = rangeMatch[1];
-        const mixedMatch = s.match(/^(\d+)\s*(?:e\s*)?(\d+)\/(\d+)$/);
-        if (mixedMatch) return parseInt(mixedMatch[1], 10) + (parseInt(mixedMatch[2], 10) / parseInt(mixedMatch[3], 10));
-        const fractionMatch = s.match(/^(\d+)\/(\d+)$/);
-        if (fractionMatch) return parseInt(fractionMatch[1], 10) / parseInt(fractionMatch[2], 10);
-        const num = parseFloat(s);
-        return isNaN(num) ? NaN : num;
-    }
-
-    function parseIngredienteStringa(originalStr) {
-        if (!originalStr) return { nome: '', quantita: NaN, unita: '' };
-        let str = originalStr.trim();
-        let lowerStr = str.toLowerCase();
-        let quantita = NaN, unita = '', nome = str;
-
-        if (lowerStr.includes('q.b.') || lowerStr.includes('quanto basta')) {
-            nome = str.replace(/q\.b\.|quanto basta/gi, '').replace(/\s*di\s*/gi, ' ').trim();
-            return { nome: nome || 'Ingrediente', quantita: NaN, unita: 'q.b.' };
-        }
-        if (lowerStr.match(/\b(un\s+)?pizzico\b/)) {
-            nome = str.replace(/(un\s+)?pizzico(\s+di)?/gi, '').trim();
-            return { nome: nome || 'Ingrediente', quantita: 1, unita: 'pizzico' };
-        }
-
-        const qtyRegex = /(?:(\d+)\s*(?:e\s*)?(\d+)\/(\d+))|(?:(\d+)\/(\d+))|(?:(\d+[\.,]\d+))|(?:(\d+)\s*-\s*\d+)|(?:(\d+))|(½|¼|¾|⅓|⅔|⅕|⅖|⅗|⅘)/;
-        const qtyMatch = lowerStr.match(qtyRegex);
-        let quantitaStr = '', qtyStartIndex = -1, qtyEndIndex = -1;
-
-        if (qtyMatch) {
-            quantitaStr = qtyMatch[0];
-            quantita = parseQuantity(quantitaStr);
-            qtyStartIndex = qtyMatch.index;
-            qtyEndIndex = qtyStartIndex + quantitaStr.length;
-            let remainingStrAfterQty = str.substring(qtyEndIndex).trim();
-            let remainingStrBeforeQty = str.substring(0, qtyStartIndex).trim();
-
-            for (const u of unitaMisura) {
-                if (!u) continue;
-                const unitRegexAfter = new RegExp(`^${u}(?:\\s|$)`, 'i'); 
-                if (remainingStrAfterQty.toLowerCase().match(unitRegexAfter)) {
-                    unita = u;
-                    const matchedUnitText = remainingStrAfterQty.match(unitRegexAfter)[0].trim();
-                    nome = (remainingStrBeforeQty + " " + remainingStrAfterQty.substring(matchedUnitText.length)).trim();
-                    break;
-                }
-                const unitRegexBefore = new RegExp(`(?:^|\\s)${u}$`, 'i');
-                if(remainingStrBeforeQty.toLowerCase().match(unitRegexBefore) && !unita) {
-                    unita = u;
-                    let tempNameHolder = str.replace(quantitaStr, '').replace(new RegExp(`\\b${u}\\b`, 'i'), '').trim();
-                    nome = tempNameHolder.replace(/\s*di\s*/gi, ' ').replace(/^per\s+/i, '').trim();
-                    if (!nome) nome = remainingStrAfterQty.trim();
-                    break;
-                }
-            }
-            if (!unita) nome = (remainingStrBeforeQty + " " + remainingStrAfterQty).trim();
-        } else {
-            nome = str;
-        }
-        
-        nome = nome.replace(/^di\s+|^d'\s*|^per\s+/i, '').replace(/\s+di\s+$|\s+d'$/i, '').trim();
-        nome = nome.replace(/\s\s+/g, ' ').trim();
-        if (!nome.trim() && (unita || !isNaN(quantita))) nome = "Ingrediente";
-        if (nome.toLowerCase() === quantitaStr.toLowerCase() || nome.toLowerCase() === unita.toLowerCase()) nome = "Ingrediente";
-        
-        return { nome: nome || 'Ingrediente sconosciuto', quantita, unita };
-    }
-
-    function formatRecipeInstructions(instructions) {
-        if (!instructions || instructions.length === 0) {
-            return '<p class="italic">Nessuna istruzione di preparazione trovata per questa ricetta.</p>';
-        }
-        let html = '<ol>'; 
-        if (typeof instructions === 'string') {
-            const steps = instructions.split(/\n+/).filter(step => step.trim() !== '');
-            steps.forEach(step => { html += `<li>${step.trim()}</li>`; });
-        } else if (Array.isArray(instructions)) {
-            instructions.forEach(item => {
-                if (typeof item === 'string') {
-                    html += `<li>${item.trim()}</li>`;
-                } else if (typeof item === 'object' && item !== null) {
-                    if (item['@type'] === 'HowToStep' && item.text) {
-                        let stepText = typeof item.text === 'string' ? item.text.replace(/<[^>]*>?/gm, '').trim() : '';
-                        html += `<li>${stepText}</li>`;
-                    } else if (item['@type'] === 'HowToSection') {
-                        if (item.name) {
-                             html += `<li><strong>${item.name.trim()}</strong></li>`; 
-                        }
-                        if (item.itemListElement && Array.isArray(item.itemListElement)) {
-                            item.itemListElement.forEach(subItem => {
-                                if (typeof subItem === 'string') {
-                                    html += `<li>${subItem.trim()}</li>`;
-                                } else if (typeof subItem === 'object' && subItem !== null && subItem['@type'] === 'HowToStep' && subItem.text) {
-                                    let stepText = typeof subItem.text === 'string' ? subItem.text.replace(/<[^>]*>?/gm, '').trim() : '';
-                                    html += `<li>${stepText}</li>`;
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
-        html += '</ol>';
-        return html;
-    }
-    
-    function displayRecipeDetails() {
-        if (currentRecipeInstructions && currentRecipeSourceUrl) {
-            recipeProcedureContent.innerHTML = formatRecipeInstructions(currentRecipeInstructions);
-            const sourceLink = document.createElement('a');
-            sourceLink.href = currentRecipeSourceUrl;
-            sourceLink.textContent = currentRecipeSourceUrl;
-            sourceLink.target = '_blank';
-            sourceLink.rel = 'noopener noreferrer';
-            sourceLink.className = 'text-orange-600 hover:underline break-all';
-            recipeSourceContent.innerHTML = '<strong>Fonte Ricetta Originale:</strong> ';
-            recipeSourceContent.appendChild(sourceLink);
-            recipeDetailsSection.classList.remove('hidden');
-        } else {
-            clearRecipeDetails();
-        }
-    }
-
-    async function caricaRicettaDaURL() {
-        clearError();
-        clearRecipeDetails(); 
-        const url = urlInputEl.value.trim();
-        const desired = parseFloat(desiredPortionsURLEl.value);
-
-        if (!url) { displayError('Per favore, inserisci un URL valido.'); return; }
-        if (isNaN(desired) || desired <= 0) { displayError('Per favore, inserisci un numero valido di porzioni desiderate (> 0).'); return; }
-
-        showLoadingModal();
-        ingredientiDiv.innerHTML = ''; 
-        outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Caricamento ricetta...</td></tr>';
-        originalPortionsEl.value = ''; 
-        desiredPortionsEl.value = desired; 
-
-        try {
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error(`Errore di rete: ${response.statusText} (Proxy: ${response.status}). L'URL o il sito potrebbero non essere accessibili.`);
-            
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
-            let ricetta = null;
-
-            for (let s of scripts) {
-                try {
-                    const json = JSON.parse(s.textContent);
-                    const findRecipe = (data) => {
-                        if (Array.isArray(data)) return data.find(item => item && (item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe'))));
-                        if (data && (data['@type'] === 'Recipe' || (Array.isArray(data['@type']) && data['@type'].includes('Recipe')))) return data;
-                        if (data && data['@graph'] && Array.isArray(data['@graph'])) return data['@graph'].find(item => item && (item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe'))));
-                        return null;
-                    };
-                    ricetta = findRecipe(json);
-                    if (ricetta) break;
-                } catch (e) { console.warn("Errore parsing JSON-LD:", e); }
-            }
-
-            if (!ricetta) {
-                displayError('Nessun dato ricetta strutturato (JSON-LD) trovato. L\'estrazione automatica potrebbe non funzionare.');
-                outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Estrazione automatica fallita. Inserisci manualmente.</td></tr>';
-                return; 
-            }
-            
-            currentRecipeInstructions = ricetta.recipeInstructions || null;
-            currentRecipeSourceUrl = url; 
-
-            if (!ricetta.recipeIngredient || ricetta.recipeIngredient.length === 0) {
-                 displayError('La ricetta trovata non contiene ingredienti. Prova con un altro URL o inserisci manualmente.');
-                 outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente trovato nella ricetta.</td></tr>';
-                 if(currentRecipeInstructions) displayRecipeDetails(); 
-                 return; 
-            }
-
-            let originalYield = 1;
-            if (ricetta.recipeYield) {
-                let yieldValue = Array.isArray(ricetta.recipeYield) ? ricetta.recipeYield[0] : ricetta.recipeYield;
-                if (typeof yieldValue === 'object' && yieldValue !== null && (yieldValue.value || yieldValue.value === 0) ) yieldValue = yieldValue.value;
-                else if (typeof yieldValue === 'string' && yieldValue.includes('-')) { 
-                    const matchRange = yieldValue.match(/(\d+)\s*-\s*(\d+)/);
-                    if (matchRange) yieldValue = matchRange[1]; 
-                }
-                const yieldStr = String(yieldValue);
-                const match = yieldStr.match(/\d+/);
-                if (match) originalYield = parseFloat(match[0]);
-            }
-            originalPortionsEl.value = originalYield > 0 ? originalYield : 1;
-
-            ricetta.recipeIngredient.forEach(ingString => {
-                const { nome, quantita, unita } = parseIngredienteStringa(ingString);
-                aggiungiIngrediente(nome, isNaN(quantita) ? '' : quantita, unita);
-            });
-            
-            ricalcolaDosi(); 
-
-        } catch (e) {
-            console.error("Dettaglio errore caricamento/parsing ricetta:", e); 
-            let errorMessage = "Si è verificato un errore imprevisto durante il caricamento o l'analisi della ricetta."; 
-            if (e instanceof Error && e.message) {
-                errorMessage = e.message;
-            } else if (typeof e === 'string' && e.length > 0) { 
-                errorMessage = e;
-            } else if (e && typeof e === 'object') {
-                if (e.statusText && e.status) {
-                     errorMessage = `Errore di rete: ${e.statusText} (Status: ${e.status})`;
-                } else {
-                    try {
-                        const errorDetails = JSON.stringify(e);
-                        if (errorDetails !== '{}') { 
-                           console.warn("Dettagli aggiuntivi dell'oggetto errore (JSON):", errorDetails);
-                        }
-                    } catch (stringifyError) {
-                        // Non fare nulla se JSON.stringify fallisce
-                    }
-                }
-            }
-            displayError(`Errore: ${errorMessage}. Controlla la console del browser (tasto F12) per dettagli tecnici.`);
-            outputTableTbody.innerHTML = `<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-red-500">Errore durante il caricamento della ricetta.</td></tr>`;
-        } finally {
-            hideLoadingModal();
-            const outputSection = document.getElementById('output-section');
-            if (outputSection && (outputTableTbody.innerHTML.includes("fallita") || outputTableTbody.innerHTML.includes("Errore") || outputTableTbody.innerHTML.includes("Nessun ingrediente trovato"))) {
-                 outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' });
-            }
-        }
-    }
-
-    function aggiungiIngrediente(nome = '', quantita = '', unita = '') {
-        const div = document.createElement('div');
-        div.className = 'ingrediente-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow';
-        const lowerCaseUnita = String(unita).toLowerCase();
-        let selectedUnit = unitaMisura.find(u => u === unita) || unitaMisura.find(u => u.toLowerCase() === lowerCaseUnita) || '';
-        div.innerHTML = `
-            <input type="text" placeholder="Nome ingrediente" value="${nome}" aria-label="Nome ingrediente" class="w-full sm:flex-grow p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 min-w-[100px] text-sm sm:text-base">
-            <input type="number" step="any" placeholder="Q.tà" value="${quantita}" aria-label="Quantità originale" class="w-full sm:w-24 p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base">
-            <select aria-label="Unità di misura" class="w-full sm:w-36 p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm sm:text-base">
-                ${unitaMisura.map(u =>
-                    `<option value="${u}" ${u === selectedUnit ? 'selected' : ''}>${u || 'Nessuna'}</option>`
-                ).join('')}
-            </select>
-            <button type="button" onclick="this.closest('.ingrediente-row').remove()" title="Rimuovi ingrediente" aria-label="Rimuovi ingrediente" class="remove-ingredient-btn self-end sm:self-center">
-                &times;
-            </button>
-        `;
-        ingredientiDiv.appendChild(div);
-        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function ricalcolaDosi() {
-        clearError();
-        
-        if (!urlInputEl.value.trim() && !currentRecipeSourceUrl) { 
-             clearRecipeDetails();
-        } else if (urlInputEl.value.trim() && !currentRecipeSourceUrl) { 
-            clearRecipeDetails();
-        }
-
-        const original = parseFloat(originalPortionsEl.value);
-        const desired = parseFloat(desiredPortionsEl.value);
-
-        if (isNaN(original) || original <= 0) { displayError("Numero porzioni originali non valido (>0)."); return; }
-        if (isNaN(desired) || desired <= 0) { displayError("Numero porzioni desiderate non valido (>0)."); return; }
-
-        const fattore = desired / original;
-        outputTableTbody.innerHTML = ''; 
-
-        const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row');
-        const isProcessingUrl = urlInputEl.value.trim() !== '';
-
-        if (ingredientRows.length === 0 && !isProcessingUrl) { 
-             outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>';
-             return;
-        }
-        
-        let hasValidIngredientsInTable = false;
-        ingredientRows.forEach(row => {
-            hasValidIngredientsInTable = true; 
-            const nome = (row.querySelector('input[type="text"]').value.trim() || 'Ingrediente non specificato');
-            const quantitaOrigStr = row.querySelector('input[type="number"]').value;
-            const quantitaOrig = parseFloat(quantitaOrigStr);
-            const unita = row.querySelector('select').value;
-            let quantitaRicalcolataFormatted = 'N/A';
-            let quantitaOriginaleFormatted = `${isNaN(quantitaOrig) ? (quantitaOrigStr || '-') : quantitaOrig} ${unita}`.trim();
-
-            if (unita.toLowerCase() === 'q.b.' || isNaN(quantitaOrig)) {
-                quantitaRicalcolataFormatted = unita.toLowerCase() === 'q.b.' ? 'q.b.' : '-';
-                quantitaOriginaleFormatted = unita.toLowerCase() === 'q.b.' ? 'q.b.' : (nome === 'Ingrediente non specificato' && !quantitaOrigStr ? '-' : `${quantitaOrigStr || nome} ${unita}`.trim());
-            } else {
-                const ricalcolata = quantitaOrig * fattore;
-                if (unitaIntere.includes(unita.toLowerCase())) {
-                    quantitaRicalcolataFormatted = Math.round(ricalcolata);
-                } else if (ricalcolata > 0) {
-                    let decimals = 1;
-                    if (ricalcolata < 10 && (unita.toLowerCase() === 'g' || unita.toLowerCase() === 'gr' || unita.toLowerCase() === 'ml')) decimals = 1;
-                    else if (ricalcolata < 1) decimals = 2;
-                    else decimals = (Number.isInteger(ricalcolata)) ? 0 : 1;
-                    
-                    quantitaRicalcolataFormatted = parseFloat(ricalcolata.toFixed(decimals));
-                } else {
-                    quantitaRicalcolataFormatted = 0;
-                }
-                quantitaRicalcolataFormatted = `${quantitaRicalcolataFormatted} ${unita}`.trim();
-            }
-
-            const tr = document.createElement('tr');
-            tr.className = "hover:bg-orange-50 transition-colors";
-            tr.innerHTML = `
-                <td class="px-3 sm:px-4 py-3 text-sm text-gray-700 whitespace-normal">${nome}</td>
-                <td class="px-3 sm:px-4 py-3 text-sm text-gray-500 text-right whitespace-nowrap">${quantitaOriginaleFormatted}</td>
-                <td class="px-3 sm:px-4 py-3 text-sm text-gray-900 font-medium text-right whitespace-nowrap">${quantitaRicalcolataFormatted}</td>
-            `;
-            outputTableTbody.appendChild(tr);
-        });
-
-        if (!hasValidIngredientsInTable && outputTableTbody.innerHTML === '') { 
-             outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente valido per il ricalcolo.</td></tr>';
-        }
-
-        const outputSection = document.getElementById('output-section');
-        if (outputSection && (hasValidIngredientsInTable || outputTableTbody.innerHTML.includes("fallita") || outputTableTbody.innerHTML.includes("Errore") || outputTableTbody.innerHTML.includes("Nessun ingrediente trovato"))) {
-            const isMobile = window.innerWidth < 768; 
-            outputSection.scrollIntoView({ behavior: 'smooth', block: isMobile ? 'start' : 'center' });
-            outputSection.classList.add('ring-4', 'ring-orange-400', 'ring-offset-2', 'transition-all', 'duration-300', 'ease-in-out');
-            outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)'; 
-            setTimeout(() => {
-                outputSection.classList.remove('ring-4', 'ring-orange-400', 'ring-offset-2');
-                outputSection.style.boxShadow = ''; 
-            }, 2500); 
-        }
-        
-        if (currentRecipeSourceUrl) {
-            displayRecipeDetails();
-            if (recipeDetailsSection && !recipeDetailsSection.classList.contains('hidden')) {
-                setTimeout(() => {
-                    if(hasValidIngredientsInTable || (outputTableTbody.innerHTML !== '' && !outputTableTbody.innerHTML.includes("Nessun ingrediente valido"))) {
-                       // Non scrollare automaticamente alla sezione dettagli a meno che non sia esplicitamente richiesto
-                    }
-                }, 400); 
-            }
-        }
-    }
-
-    function resetRicetta() {
-        clearError();
-        clearRecipeDetails(); 
-
-        urlInputEl.value = '';
-        desiredPortionsURLEl.value = '';
-        originalPortionsEl.value = '';
-        desiredPortionsEl.value = '';
-        ingredientiDiv.innerHTML = '';
-        outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>';
-        
-        // Chiudi gli accordion attivi (quelli che hanno il bottone con la classe 'open')
-        document.querySelectorAll('.accordion-button.open').forEach(button => {
-            const contentId = button.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]; 
-            if(contentId) { 
-                const contentElement = document.getElementById(contentId);
-                if (contentElement && contentElement.classList.contains('open')) {
-                     toggleAccordion(button, contentId); 
-                }
-            }
-        });
-
-        document.getElementById('url-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        console.log("Ricetta resettata.");
-    }
-
+    function showLoadingModal() { if (loadingModal) loadingModal.classList.add('active'); }
+    function hideLoadingModal() { if (loadingModal) loadingModal.classList.remove('active'); }
+    function displayError(message) { errorDiv.textContent = message; errorDiv.classList.remove('hidden'); errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    function clearError() { errorDiv.textContent = ''; errorDiv.classList.add('hidden'); }
+    function clearRecipeDetails() { currentRecipeInstructions = null; currentRecipeSourceUrl = null; if (recipeProcedureContent) recipeProcedureContent.innerHTML = ''; if (recipeSourceContent) recipeSourceContent.innerHTML = ''; if (recipeDetailsSection) recipeDetailsSection.classList.add('hidden'); }
+    function parseQuantity(qtyStr) { if (!qtyStr) return NaN; let s = String(qtyStr).trim().toLowerCase().replace(',', '.'); if (s === 'q.b.' || s === 'quanto basta' || s === 'un pizzico' || s === 'pizzico') return NaN; const fractionSymbols = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1/3, '⅔': 2/3, '⅕': 0.2, '⅖': 0.4, '⅗': 0.6, '⅘': 0.8 }; if (fractionSymbols[s]) return fractionSymbols[s]; const rangeMatch = s.match(/^(\d+)\s*-\s*\d+/); if (rangeMatch) s = rangeMatch[1]; const mixedMatch = s.match(/^(\d+)\s*(?:e\s*)?(\d+)\/(\d+)$/); if (mixedMatch) return parseInt(mixedMatch[1], 10) + (parseInt(mixedMatch[2], 10) / parseInt(mixedMatch[3], 10)); const fractionMatch = s.match(/^(\d+)\/(\d+)$/); if (fractionMatch) return parseInt(fractionMatch[1], 10) / parseInt(fractionMatch[2], 10); const num = parseFloat(s); return isNaN(num) ? NaN : num; }
+    function parseIngredienteStringa(originalStr) { if (!originalStr) return { nome: '', quantita: NaN, unita: '' }; let str = originalStr.trim(); let lowerStr = str.toLowerCase(); let quantita = NaN, unita = '', nome = str; if (lowerStr.includes('q.b.') || lowerStr.includes('quanto basta')) { nome = str.replace(/q\.b\.|quanto basta/gi, '').replace(/\s*di\s*/gi, ' ').trim(); return { nome: nome || 'Ingrediente', quantita: NaN, unita: 'q.b.' }; } if (lowerStr.match(/\b(un\s+)?pizzico\b/)) { nome = str.replace(/(un\s+)?pizzico(\s+di)?/gi, '').trim(); return { nome: nome || 'Ingrediente', quantita: 1, unita: 'pizzico' }; } const qtyRegex = /(?:(\d+)\s*(?:e\s*)?(\d+)\/(\d+))|(?:(\d+)\/(\d+))|(?:(\d+[\.,]\d+))|(?:(\d+)\s*-\s*\d+)|(?:(\d+))|(½|¼|¾|⅓|⅔|⅕|⅖|⅗|⅘)/; const qtyMatch = lowerStr.match(qtyRegex); let quantitaStr = '', qtyStartIndex = -1, qtyEndIndex = -1; if (qtyMatch) { quantitaStr = qtyMatch[0]; quantita = parseQuantity(quantitaStr); qtyStartIndex = qtyMatch.index; qtyEndIndex = qtyStartIndex + quantitaStr.length; let remainingStrAfterQty = str.substring(qtyEndIndex).trim(); let remainingStrBeforeQty = str.substring(0, qtyStartIndex).trim(); for (const u of unitaMisura) { if (!u) continue; const unitRegexAfter = new RegExp(`^${u}(?:\\s|$)`, 'i'); if (remainingStrAfterQty.toLowerCase().match(unitRegexAfter)) { unita = u; const matchedUnitText = remainingStrAfterQty.match(unitRegexAfter)[0].trim(); nome = (remainingStrBeforeQty + " " + remainingStrAfterQty.substring(matchedUnitText.length)).trim(); break; } const unitRegexBefore = new RegExp(`(?:^|\\s)${u}$`, 'i'); if(remainingStrBeforeQty.toLowerCase().match(unitRegexBefore) && !unita) { unita = u; let tempNameHolder = str.replace(quantitaStr, '').replace(new RegExp(`\\b${u}\\b`, 'i'), '').trim(); nome = tempNameHolder.replace(/\s*di\s*/gi, ' ').replace(/^per\s+/i, '').trim(); if (!nome) nome = remainingStrAfterQty.trim(); break; } } if (!unita) nome = (remainingStrBeforeQty + " " + remainingStrAfterQty).trim(); } else { nome = str; } nome = nome.replace(/^di\s+|^d'\s*|^per\s+/i, '').replace(/\s+di\s+$|\s+d'$/i, '').trim(); nome = nome.replace(/\s\s+/g, ' ').trim(); if (!nome.trim() && (unita || !isNaN(quantita))) nome = "Ingrediente"; if (nome.toLowerCase() === quantitaStr.toLowerCase() || nome.toLowerCase() === unita.toLowerCase()) nome = "Ingrediente"; return { nome: nome || 'Ingrediente sconosciuto', quantita, unita }; }
+    function formatRecipeInstructions(instructions) { if (!instructions || instructions.length === 0) { return '<p class="italic">Nessuna istruzione di preparazione trovata per questa ricetta.</p>'; } let html = '<ol>'; if (typeof instructions === 'string') { const steps = instructions.split(/\n+/).filter(step => step.trim() !== ''); steps.forEach(step => { html += `<li>${step.trim()}</li>`; }); } else if (Array.isArray(instructions)) { instructions.forEach(item => { if (typeof item === 'string') { html += `<li>${item.trim()}</li>`; } else if (typeof item === 'object' && item !== null) { if (item['@type'] === 'HowToStep' && item.text) { let stepText = typeof item.text === 'string' ? item.text.replace(/<[^>]*>?/gm, '').trim() : ''; html += `<li>${stepText}</li>`; } else if (item['@type'] === 'HowToSection') { if (item.name) { html += `<li><strong>${item.name.trim()}</strong></li>`; } if (item.itemListElement && Array.isArray(item.itemListElement)) { item.itemListElement.forEach(subItem => { if (typeof subItem === 'string') { html += `<li>${subItem.trim()}</li>`; } else if (typeof subItem === 'object' && subItem !== null && subItem['@type'] === 'HowToStep' && subItem.text) { let stepText = typeof subItem.text === 'string' ? subItem.text.replace(/<[^>]*>?/gm, '').trim() : ''; html += `<li>${stepText}</li>`; } }); } } } }); } html += '</ol>'; return html; }
+    function displayRecipeDetails() { if (currentRecipeInstructions && currentRecipeSourceUrl) { recipeProcedureContent.innerHTML = formatRecipeInstructions(currentRecipeInstructions); const sourceLink = document.createElement('a'); sourceLink.href = currentRecipeSourceUrl; sourceLink.textContent = currentRecipeSourceUrl; sourceLink.target = '_blank'; sourceLink.rel = 'noopener noreferrer'; sourceLink.className = 'text-orange-600 hover:underline break-all'; recipeSourceContent.innerHTML = '<strong>Fonte Ricetta Originale:</strong> '; recipeSourceContent.appendChild(sourceLink); recipeDetailsSection.classList.remove('hidden'); } else { clearRecipeDetails(); } }
+    async function caricaRicettaDaURL() { clearError(); clearRecipeDetails(); const url = urlInputEl.value.trim(); const desired = parseFloat(desiredPortionsURLEl.value); if (!url) { displayError('Per favore, inserisci un URL valido.'); return; } if (isNaN(desired) || desired <= 0) { displayError('Per favore, inserisci un numero valido di porzioni desiderate (> 0).'); return; } showLoadingModal(); ingredientiDiv.innerHTML = ''; outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Caricamento ricetta...</td></tr>'; originalPortionsEl.value = ''; desiredPortionsEl.value = desired; try { const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; const response = await fetch(proxyUrl); if (!response.ok) throw new Error(`Errore di rete: ${response.statusText} (Proxy: ${response.status}). L'URL o il sito potrebbero non essere accessibili.`); const html = await response.text(); const parser = new DOMParser(); const doc = parser.parseFromString(html, 'text/html'); const scripts = doc.querySelectorAll('script[type="application/ld+json"]'); let ricetta = null; for (let s of scripts) { try { const json = JSON.parse(s.textContent); const findRecipe = (data) => { if (Array.isArray(data)) return data.find(item => item && (item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe')))); if (data && (data['@type'] === 'Recipe' || (Array.isArray(data['@type']) && data['@type'].includes('Recipe')))) return data; if (data && data['@graph'] && Array.isArray(data['@graph'])) return data['@graph'].find(item => item && (item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe')))); return null; }; ricetta = findRecipe(json); if (ricetta) break; } catch (e) { console.warn("Errore parsing JSON-LD:", e); } } if (!ricetta) { displayError('Nessun dato ricetta strutturato (JSON-LD) trovato. L\'estrazione automatica potrebbe non funzionare.'); outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Estrazione automatica fallita. Inserisci manualmente.</td></tr>'; return; } currentRecipeInstructions = ricetta.recipeInstructions || null; currentRecipeSourceUrl = url; if (!ricetta.recipeIngredient || ricetta.recipeIngredient.length === 0) { displayError('La ricetta trovata non contiene ingredienti. Prova con un altro URL o inserisci manualmente.'); outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente trovato nella ricetta.</td></tr>'; if(currentRecipeInstructions) displayRecipeDetails(); return; } let originalYield = 1; if (ricetta.recipeYield) { let yieldValue = Array.isArray(ricetta.recipeYield) ? ricetta.recipeYield[0] : ricetta.recipeYield; if (typeof yieldValue === 'object' && yieldValue !== null && (yieldValue.value || yieldValue.value === 0) ) yieldValue = yieldValue.value; else if (typeof yieldValue === 'string' && yieldValue.includes('-')) { const matchRange = yieldValue.match(/(\d+)\s*-\s*(\d+)/); if (matchRange) yieldValue = matchRange[1]; } const yieldStr = String(yieldValue); const match = yieldStr.match(/\d+/); if (match) originalYield = parseFloat(match[0]); } originalPortionsEl.value = originalYield > 0 ? originalYield : 1; ricetta.recipeIngredient.forEach(ingString => { const { nome, quantita, unita } = parseIngredienteStringa(ingString); aggiungiIngrediente(nome, isNaN(quantita) ? '' : quantita, unita); }); ricalcolaDosi(); } catch (e) { console.error("Dettaglio errore caricamento/parsing ricetta:", e); let errorMessage = "Si è verificato un errore imprevisto durante il caricamento o l'analisi della ricetta."; if (e instanceof Error && e.message) { errorMessage = e.message; } else if (typeof e === 'string' && e.length > 0) { errorMessage = e; } else if (e && typeof e === 'object') { if (e.statusText && e.status) { errorMessage = `Errore di rete: ${e.statusText} (Status: ${e.status})`; } else { try { const errorDetails = JSON.stringify(e); if (errorDetails !== '{}') { console.warn("Dettagli aggiuntivi dell'oggetto errore (JSON):", errorDetails); } } catch (stringifyError) { } } } displayError(`Errore: ${errorMessage}. Controlla la console del browser (tasto F12) per dettagli tecnici.`); outputTableTbody.innerHTML = `<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-red-500">Errore durante il caricamento della ricetta.</td></tr>`; } finally { hideLoadingModal(); const outputSection = document.getElementById('output-section'); if (outputSection && (outputTableTbody.innerHTML.includes("fallita") || outputTableTbody.innerHTML.includes("Errore") || outputTableTbody.innerHTML.includes("Nessun ingrediente trovato"))) { outputSection.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'start' : 'center' }); } } }
+    function aggiungiIngrediente(nome = '', quantita = '', unita = '') { const div = document.createElement('div'); div.className = 'ingrediente-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow'; const lowerCaseUnita = String(unita).toLowerCase(); let selectedUnit = unitaMisura.find(u => u === unita) || unitaMisura.find(u => u.toLowerCase() === lowerCaseUnita) || ''; div.innerHTML = `<input type="text" placeholder="Nome ingrediente" value="${nome}" aria-label="Nome ingrediente" class="w-full sm:flex-grow p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 min-w-[100px] text-sm sm:text-base"><input type="number" step="any" placeholder="Q.tà" value="${quantita}" aria-label="Quantità originale" class="w-full sm:w-24 p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base"><select aria-label="Unità di misura" class="w-full sm:w-36 p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm sm:text-base">${unitaMisura.map(u =>`<option value="${u}" ${u === selectedUnit ? 'selected' : ''}>${u || 'Nessuna'}</option>`).join('')}</select><button type="button" onclick="this.closest('.ingrediente-row').remove()" title="Rimuovi ingrediente" aria-label="Rimuovi ingrediente" class="remove-ingredient-btn self-end sm:self-center">&times;</button>`; ingredientiDiv.appendChild(div); div.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    function ricalcolaDosi() { clearError(); if (!urlInputEl.value.trim() && !currentRecipeSourceUrl) { clearRecipeDetails(); } else if (urlInputEl.value.trim() && !currentRecipeSourceUrl) { clearRecipeDetails(); } const original = parseFloat(originalPortionsEl.value); const desired = parseFloat(desiredPortionsEl.value); if (isNaN(original) || original <= 0) { displayError("Numero porzioni originali non valido (>0)."); return; } if (isNaN(desired) || desired <= 0) { displayError("Numero porzioni desiderate non valido (>0)."); return; } const fattore = desired / original; outputTableTbody.innerHTML = ''; const ingredientRows = document.querySelectorAll('#ingredienti .ingrediente-row'); const isProcessingUrl = urlInputEl.value.trim() !== ''; if (ingredientRows.length === 0 && !isProcessingUrl) { outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente inserito. Aggiungine almeno uno.</td></tr>'; return; } let hasValidIngredientsInTable = false; ingredientRows.forEach(row => { hasValidIngredientsInTable = true; const nome = (row.querySelector('input[type="text"]').value.trim() || 'Ingrediente non specificato'); const quantitaOrigStr = row.querySelector('input[type="number"]').value; const quantitaOrig = parseFloat(quantitaOrigStr); const unita = row.querySelector('select').value; let quantitaRicalcolataFormatted = 'N/A'; let quantitaOriginaleFormatted = `${isNaN(quantitaOrig) ? (quantitaOrigStr || '-') : quantitaOrig} ${unita}`.trim(); if (unita.toLowerCase() === 'q.b.' || isNaN(quantitaOrig)) { quantitaRicalcolataFormatted = unita.toLowerCase() === 'q.b.' ? 'q.b.' : '-'; quantitaOriginaleFormatted = unita.toLowerCase() === 'q.b.' ? 'q.b.' : (nome === 'Ingrediente non specificato' && !quantitaOrigStr ? '-' : `${quantitaOrigStr || nome} ${unita}`.trim()); } else { const ricalcolata = quantitaOrig * fattore; if (unitaIntere.includes(unita.toLowerCase())) { quantitaRicalcolataFormatted = Math.round(ricalcolata); } else if (ricalcolata > 0) { let decimals = 1; if (ricalcolata < 10 && (unita.toLowerCase() === 'g' || unita.toLowerCase() === 'gr' || unita.toLowerCase() === 'ml')) decimals = 1; else if (ricalcolata < 1) decimals = 2; else decimals = (Number.isInteger(ricalcolata)) ? 0 : 1; quantitaRicalcolataFormatted = parseFloat(ricalcolata.toFixed(decimals)); } else { quantitaRicalcolataFormatted = 0; } quantitaRicalcolataFormatted = `${quantitaRicalcolataFormatted} ${unita}`.trim(); } const tr = document.createElement('tr'); tr.className = "hover:bg-orange-50 transition-colors"; tr.innerHTML = `<td class="px-3 sm:px-4 py-3 text-sm text-gray-700 whitespace-normal">${nome}</td><td class="px-3 sm:px-4 py-3 text-sm text-gray-500 text-right whitespace-nowrap">${quantitaOriginaleFormatted}</td><td class="px-3 sm:px-4 py-3 text-sm text-gray-900 font-medium text-right whitespace-nowrap">${quantitaRicalcolataFormatted}</td>`; outputTableTbody.appendChild(tr); }); if (!hasValidIngredientsInTable && outputTableTbody.innerHTML === '') { outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Nessun ingrediente valido per il ricalcolo.</td></tr>'; } const outputSection = document.getElementById('output-section'); if (outputSection && (hasValidIngredientsInTable || outputTableTbody.innerHTML.includes("fallita") || outputTableTbody.innerHTML.includes("Errore") || outputTableTbody.innerHTML.includes("Nessun ingrediente trovato"))) { const isMobile = window.innerWidth < 768; outputSection.scrollIntoView({ behavior: 'smooth', block: isMobile ? 'start' : 'center' }); outputSection.classList.add('ring-4', 'ring-orange-400', 'ring-offset-2', 'transition-all', 'duration-300', 'ease-in-out'); outputSection.style.boxShadow = '0 0 25px rgba(249, 115, 22, 0.5)'; setTimeout(() => { outputSection.classList.remove('ring-4', 'ring-orange-400', 'ring-offset-2'); outputSection.style.boxShadow = ''; }, 2500); } if (currentRecipeSourceUrl) { displayRecipeDetails(); if (recipeDetailsSection && !recipeDetailsSection.classList.contains('hidden')) { setTimeout(() => { if(hasValidIngredientsInTable || (outputTableTbody.innerHTML !== '' && !outputTableTbody.innerHTML.includes("Nessun ingrediente valido"))) { } }, 400); } } }
+    function resetRicetta() { clearError(); clearRecipeDetails(); urlInputEl.value = ''; desiredPortionsURLEl.value = ''; originalPortionsEl.value = ''; desiredPortionsEl.value = ''; ingredientiDiv.innerHTML = ''; outputTableTbody.innerHTML = '<tr><td colspan="3" class="px-3 sm:px-4 py-6 text-center text-gray-500">Carica una ricetta o inserisci gli ingredienti manualmente.</td></tr>'; document.getElementById('url-section').scrollIntoView({ behavior: 'smooth', block: 'start' }); console.log("Ricetta resettata."); }
 </script>
+
+<!-- Script Iubenda Cookie Solution -->
+<script type="text/javascript" src="https://embeds.iubenda.com/widgets/fb72df8e-374a-4eed-b5b8-3726a63eca0d.js" charset="UTF-8" async></script>
 </body>
 </html>
