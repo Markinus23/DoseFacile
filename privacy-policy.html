@@ -5,23 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Privacy e Cookie Policy - DoseFacile</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Script principale di Iubenda per l'embed delle policy, caricato una sola volta -->
-    <script type="text/javascript">
-        // FIX: Caricamento dello script di Iubenda semplificato e reso più veloce per evitare conflitti.
-        (function (w,d) {
-            var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; 
-            s.src="https://cdn.iubenda.com/iubenda.js"; 
-            tag.parentNode.insertBefore(s,tag);
-        })(window, document);
-    </script>
-    <!-- Google Analytics -->
+    
+    <!-- Script Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GKXC0VWWMP"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
 
       // Stato di consenso predefinito per Google Consent Mode v2
-      // Previene errori e garantisce che i tag di Google attendano il consenso.
+      // Questo previene errori e garantisce che i tag di Google attendano il consenso.
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
@@ -33,6 +25,10 @@
       gtag('js', new Date());
       gtag('config', 'G-GKXC0VWWMP');
     </script>
+
+    <!-- Script principale di Iubenda per l'embed delle policy -->
+    <script async type="text/javascript" src="https://cdn.iubenda.com/iubenda.js"></script>
+
     <style>
         body { font-family: 'Inter', 'Segoe UI', sans-serif; }
     </style>
@@ -92,3 +88,4 @@
 
 </body>
 </html>
+
