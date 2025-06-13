@@ -5,21 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Privacy e Cookie Policy - DoseFacile</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Script principale di Iubenda per l'embed delle policy, caricato una sola volta -->
     <script type="text/javascript">
-        (function (w,d) {var loader = function () {var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; s.src="https://cdn.iubenda.com/iubenda.js"; tag.parentNode.insertBefore(s,tag);}; if(w.addEventListener){w.addEventListener("load", loader, false);}else if(w.attachEvent){w.attachEvent("onload", loader);}else{w.onload = loader;}})(window, document);
+        // FIX: Caricamento dello script di Iubenda semplificato e reso più veloce per evitare conflitti.
+        (function (w,d) {
+            var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; 
+            s.src="https://cdn.iubenda.com/iubenda.js"; 
+            tag.parentNode.insertBefore(s,tag);
+        })(window, document);
     </script>
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GKXC0VWWMP"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
+      // Stato di consenso predefinito per Google Consent Mode v2
+      // Previene errori e garantisce che i tag di Google attendano il consenso.
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+
+      gtag('js', new Date());
       gtag('config', 'G-GKXC0VWWMP');
     </script>
     <style>
-        body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-        }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; }
     </style>
 </head>
 <body class="bg-orange-50 text-gray-800 p-2 sm:p-4 md:p-8 min-h-screen">
@@ -30,6 +45,7 @@
             <h1 class="text-2xl sm:text-3xl font-bold text-orange-600">
                 Privacy e Cookie Policy
             </h1>
+            <!-- Assicurati che 'index.html' sia il nome corretto della tua homepage -->
             <a href="index.html" class="text-sm text-orange-600 hover:text-orange-700 hover:underline">
                 &larr; Torna a DoseFacile
             </a>
@@ -43,33 +59,34 @@
             <h2 class="text-xl font-semibold text-gray-800 mb-3">Privacy Policy</h2>
             <p>
                 <a href="https://www.iubenda.com/privacy-policy/75087484" class="iubenda-white iubenda-noiframe iubenda-embed iubenda-noiframe " title="Privacy Policy ">Privacy Policy</a>
-                </p>
+            </p>
         </section>
 
         <section class="mb-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-3">Cookie Policy</h2>
             <p>
                 <a href="https://www.iubenda.com/privacy-policy/75087484/cookie-policy" class="iubenda-white iubenda-noiframe iubenda-embed iubenda-noiframe " title="Cookie Policy ">Cookie Policy</a>
-                </p>
+            </p>
         </section>
-
+        
         <section class="mb-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-3">Personalizza Consenso Cookie</h2>
             <p>Utilizza il seguente strumento per personalizzare le tue preferenze sui cookie e sul tracciamento:</p>
-            <script type="text/javascript" src="//embeds.iubenda.com/widgets/fb72df8e-374a-4eed-b5b8-3726a63eca0d.js"></script>
-            </section>
+            <!-- Script per il widget di gestione del consenso cookie di Iubenda -->
+            <script type="text/javascript" src="https://embeds.iubenda.com/widgets/fb72df8e-374a-4eed-b5b8-3726a63eca0d.js"></script>
+        </section>
 
     </main>
 
     <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
         <p>&copy; <span id="currentYearPrivacy"></span> Dose Facile.
+            <!-- Assicurati che 'index.html' sia il nome corretto della tua homepage -->
             <a href="index.html" class="text-orange-600 hover:underline">Torna alla Home</a>.
         </p>
     </footer>
 </div>
 
 <script>
-    // Script semplice per l'anno corrente nel footer di questa pagina
     document.getElementById('currentYearPrivacy').textContent = new Date().getFullYear();
 </script>
 
